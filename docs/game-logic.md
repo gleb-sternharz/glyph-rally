@@ -60,8 +60,9 @@ Each round:
 2. The target word is shown above the board.
 3. The target icon and several distractor icons are placed on the board.
 4. Hitting the icon with the same internal `matchKey` grows the snake and scores.
-5. Hitting any other icon shrinks the snake.
-6. A new target round starts immediately after any symbol hit.
+5. Hitting any other icon shrinks the snake and removes only that wrong icon.
+6. The remaining icons stay in place after a wrong hit, so the player can keep searching for the target.
+7. A new target round starts after the correct icon is hit.
 
 Dictionary entries do not provide ids. `dictionary.js` derives `matchKey` from the icon path, so icons should be unique within a dictionary.
 

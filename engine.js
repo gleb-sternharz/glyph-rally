@@ -386,12 +386,14 @@
     }
 
     if (game.challenge === GAME_TYPES.reading) {
-      events.boardFilled = !startReadingRound(game);
-      events.targetChanged = true;
-    } else {
-      events.boardFilled = !placeItem(game, createClassicItem(item.itemType));
+      if (item.effect === "grow") {
+        events.boardFilled = !startReadingRound(game);
+        events.targetChanged = true;
+      }
+      return item.effect;
     }
 
+    events.boardFilled = !placeItem(game, createClassicItem(item.itemType));
     return item.effect;
   }
 
