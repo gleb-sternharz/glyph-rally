@@ -102,6 +102,8 @@
     { id: "greek", label: "Ελληνικά", source: "greek" },
     { id: "italian", label: "Italiano", source: "italian" },
     { id: "russian", label: "Русский", source: "russian" },
+    { id: "ukrainian", label: "Українська", source: "ukrainian" },
+    { id: "uzbek", label: "Oʻzbekcha", source: "uzbek" },
   ];
 
   window.SnakeConfig = {
