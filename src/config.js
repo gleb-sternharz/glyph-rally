@@ -91,6 +91,7 @@
     { id: "french", label: "Français", source: "french" },
     { id: "german", label: "Deutsch", source: "german" },
     { id: "greek", label: "Ελληνικά", source: "greek" },
+    { id: "italian", label: "Italiano", source: "italian" },
     { id: "russian", label: "Русский", source: "russian" },
   ];
 
