@@ -81,8 +81,17 @@
       return Promise.resolve();
     }
 
+    return Promise.race([
+      new Promise((resolve) => {
+        window.addEventListener("snake:ready", resolve, { once: true });
+      }),
+      delay(6000),
+    ]);
+  }
+
+  function delay(ms) {
     return new Promise((resolve) => {
-      window.addEventListener("snake:ready", resolve, { once: true });
+      window.setTimeout(resolve, ms);
     });
   }
 
@@ -92,6 +101,11 @@
     const bar = document.querySelector("#bootProgressBar");
     const text = document.querySelector("#bootProgressText");
     let current = 0;
+
+    if (root) {
+      root.hidden = false;
+      root.classList.remove("is-complete");
+    }
 
     return {
       complete,

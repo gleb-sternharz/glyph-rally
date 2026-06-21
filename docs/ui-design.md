@@ -6,7 +6,7 @@ The UI is split into shared, setup, and game styling:
 - `styles/setup.css`: setup screen, player panels, radio/segmented controls, dictionary select, keyboard hints.
 - `styles/game.css`: game header, toolbar, scoreboard, reading prompt, canvas arena, overlay.
 
-The startup progress bar is `#bootLoader` in `index.html`, styled by `styles/common.css`, and driven by `src/boot.js`.
+The startup progress bar is `#bootLoader` in `index.html`. It starts hidden, is shown and driven by `src/boot.js`, and is styled by `styles/common.css`.
 
 ## Main Design Tokens
 

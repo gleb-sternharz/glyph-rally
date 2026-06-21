@@ -380,17 +380,19 @@
   }
 
   async function finishInitialRender() {
-    reportLoadingProgress(90, "Loading icons");
-    await window.SnakeDictionary.preloadIcons(["assets/icons/skull.svg"]);
+    try {
+      reportLoadingProgress(90, "Loading icons");
+      await window.SnakeDictionary.preloadIcons(["assets/icons/skull.svg"]);
 
-    reportLoadingProgress(96, "Rendering board");
-    syncSetupPreview();
-    await nextFrame();
-    syncSetupPreview();
-    await nextFrame();
-
-    window.SnakeAppReady = true;
-    window.dispatchEvent(new CustomEvent("snake:ready"));
+      reportLoadingProgress(96, "Rendering board");
+      syncSetupPreview();
+      await nextFrame();
+      syncSetupPreview();
+      await nextFrame();
+    } finally {
+      window.SnakeAppReady = true;
+      window.dispatchEvent(new CustomEvent("snake:ready"));
+    }
   }
 
   function reportLoadingProgress(progress, label) {

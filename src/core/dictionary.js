@@ -120,8 +120,16 @@
         return;
       }
 
-      image.addEventListener("load", resolve, { once: true });
-      image.addEventListener("error", resolve, { once: true });
+      const timeout = window.setTimeout(done, 1200);
+      image.addEventListener("load", done, { once: true });
+      image.addEventListener("error", done, { once: true });
+
+      function done() {
+        window.clearTimeout(timeout);
+        image.removeEventListener("load", done);
+        image.removeEventListener("error", done);
+        resolve();
+      }
     });
   }
 
