@@ -40,8 +40,15 @@
 
     function drawBoard(board, palette) {
       syncCanvas(board);
+      const rect = getBoardRect(board);
+      const radius = getBoardRadius(rect);
+
+      ctx.save();
+      roundRect(ctx, rect.x, rect.y, rect.width, rect.height, radius);
+      ctx.clip();
+
       ctx.fillStyle = palette.canvasBg;
-      ctx.fillRect(0, 0, metrics.width, metrics.height);
+      ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
 
       ctx.fillStyle = palette.canvasChecker;
       for (let y = 0; y < board.rows; y += 1) {
@@ -54,15 +61,12 @@
           );
         }
       }
+      ctx.restore();
 
       ctx.strokeStyle = palette.canvasBorder;
       ctx.lineWidth = 2;
-      ctx.strokeRect(
-        metrics.offsetX + 1,
-        metrics.offsetY + 1,
-        board.cols * metrics.cell - 2,
-        board.rows * metrics.cell - 2,
-      );
+      roundRect(ctx, rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 2, Math.max(0, radius - 1));
+      ctx.stroke();
     }
 
     function drawItems(game, palette) {
@@ -155,6 +159,27 @@
         ctx.arc(eye.x, eye.y, Math.max(1.1, metrics.cell * 0.1), 0, Math.PI * 2);
         ctx.fill();
       }
+    }
+
+    function getBoardRect(board) {
+      return {
+        x: metrics.offsetX,
+        y: metrics.offsetY,
+        width: board.cols * metrics.cell,
+        height: board.rows * metrics.cell,
+      };
+    }
+
+    function getBoardRadius(rect) {
+      const fallback = Math.min(18, metrics.cell * 0.7);
+      const radius = arena
+        ? Number.parseFloat(window.getComputedStyle(arena).borderTopLeftRadius)
+        : fallback;
+      return Math.min(
+        Number.isFinite(radius) ? radius : fallback,
+        rect.width / 2,
+        rect.height / 2,
+      );
     }
 
     return {
