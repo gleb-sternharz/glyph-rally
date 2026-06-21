@@ -76,7 +76,9 @@
 
   const DICTIONARIES = [
     { id: "english", label: "English", source: "english" },
+    { id: "french", label: "Français", source: "french" },
     { id: "german", label: "Deutsch", source: "german" },
+    { id: "greek", label: "Ελληνικά", source: "greek" },
     { id: "russian", label: "Русский", source: "russian" },
   ];
 
