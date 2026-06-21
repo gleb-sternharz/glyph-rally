@@ -12,6 +12,7 @@ Edit `src/config.js` for:
 - `SPEEDS`: manual, slow, and fast timing. `auto: false` means a snake moves only after its own direction key input.
 - `KEY_MAP`: keyboard bindings for each player. The movement handler and the visible setup-screen key hints both read this map.
 - `DEFAULT_PLAYERS`: default names and colors in the setup form.
+- `PLAYER_COLORS`: predefined swatch colors available in the setup form. Saved or URL-provided custom colors are mapped to the nearest swatch.
 - `CLASSIC_ITEM_COUNTS_BY_MODE`: apple and skull counts for one-player and two-player classic mode.
 - `READING_SYMBOL_COUNT_BY_MODE`: number of symbols shown in reading mode.
 - `DICTIONARIES`: dropdown options. Each option has `id`, `label`, and `source`.
@@ -57,7 +58,7 @@ Classic mode also uses SVGs:
 - speed
 - field size
 - theme
-- player names and colors
+- player names and selected swatch colors
 
 The storage key is `localSnakePrefs`, configured in `src/config.js`.
 
@@ -78,7 +79,7 @@ Supported query parameters:
 - `field`: any key from `FIELD_SIZES`
 - `theme`: `dark` or `light`
 - `p1`, `p2`: player names
-- `c1`, `c2`: player colors as six-digit hex values, without `#`
+- `c1`, `c2`: player colors as six-digit hex values, without `#`; values outside `PLAYER_COLORS` are mapped to the nearest swatch
 
 On startup, URL settings are applied after localStorage preferences, so a shared link wins over saved local choices.
 

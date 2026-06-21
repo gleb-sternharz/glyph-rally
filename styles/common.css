@@ -206,7 +206,8 @@ h2 {
 .icon-button:focus-visible,
 .mobile-control:focus-visible,
 .field input:focus-visible,
-.field select:focus-visible {
+.field select:focus-visible,
+.color-option input:focus-visible + .color-swatch {
   outline: 3px solid rgba(255, 207, 92, 0.56);
   outline-offset: 3px;
 }

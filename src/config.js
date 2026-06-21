@@ -69,6 +69,15 @@
     { name: "Berry", color: "#5aa7ff" },
   ];
 
+  const PLAYER_COLORS = [
+    { name: "Lime", value: "#51d88a" },
+    { name: "Sky", value: "#5aa7ff" },
+    { name: "Sun", value: "#ffd84d" },
+    { name: "Bubblegum", value: "#ff7ab6" },
+    { name: "Grape", value: "#a78bfa" },
+    { name: "Orange", value: "#ff9f43" },
+  ];
+
   const GAME_TYPES = {
     classic: "classic",
     reading: "reading",
@@ -102,6 +111,7 @@
     DIRS,
     KEY_MAP,
     DEFAULT_PLAYERS,
+    PLAYER_COLORS,
     DEFAULT_FIELD_SIZE,
     CLASSIC_ITEM_COUNTS_BY_MODE,
     DEFAULT_DICTIONARY_ID,

@@ -9,6 +9,7 @@
     FIELD_SIZES,
     GAME_TYPES,
     KEY_MAP,
+    PLAYER_COLORS,
     SPEEDS,
   } = window.SnakeConfig;
   const CONTROL_HINT_DIRECTIONS = ["up", "left", "down", "right"];
@@ -41,6 +42,7 @@
     const playerMarks = elements.setupScreen.querySelectorAll(".player-mark");
     const modeInputs = elements.setupForm.querySelectorAll('input[name="mode"]');
     let phoneMode = false;
+    populateColorPickers();
     populateDictionarySelect();
     populateControlHints();
 
@@ -70,12 +72,11 @@
 
       prefs.players?.forEach((player, index) => {
         const nameInput = elements.setupForm.elements[index === 0 ? "playerOneName" : "playerTwoName"];
-        const colorInput = elements.setupForm.elements[index === 0 ? "playerOneColor" : "playerTwoColor"];
         if (nameInput && typeof player.name === "string") {
           nameInput.value = player.name;
         }
-        if (colorInput && player.color) {
-          colorInput.value = player.color;
+        if (player.color) {
+          setPlayerColor(index, player.color);
         }
       });
     }
@@ -86,8 +87,8 @@
       }
 
       const mode = phoneMode ? 1 : Number(elements.setupForm.elements.mode.value);
-      const p1Color = elements.setupForm.elements.playerOneColor.value;
-      const p2Color = elements.setupForm.elements.playerTwoColor.value;
+      const p1Color = readPlayerColor(0);
+      const p2Color = readPlayerColor(1);
       const readingMode = elements.setupForm.elements.challenge.value === GAME_TYPES.reading;
 
       applyTheme(elements.setupForm.elements.theme.value);
@@ -98,7 +99,7 @@
       elements.playerTwoPanel.classList.toggle("is-disabled", mode === 1);
       elements.playerTwoPanel.classList.toggle("is-phone-hidden", phoneMode);
       elements.setupForm.elements.playerTwoName.disabled = mode === 1;
-      elements.setupForm.elements.playerTwoColor.disabled = mode === 1;
+      setColorPickerDisabled(1, mode === 1);
       elements.setupForm.elements.dictionaryId.disabled = !readingMode;
       elements.dictionaryField.classList.toggle("is-disabled", !readingMode);
       playerMarks[0].style.setProperty("--snake-color", p1Color);
@@ -140,11 +141,11 @@
         players: [
           {
             name: firstName,
-            color: elements.setupForm.elements.playerOneColor.value,
+            color: readPlayerColor(0),
           },
           {
             name: secondName,
-            color: elements.setupForm.elements.playerTwoColor.value,
+            color: readPlayerColor(1),
           },
         ].slice(0, mode),
       };
@@ -365,6 +366,40 @@
         : select.options[0]?.value ?? "";
     }
 
+    function populateColorPickers() {
+      const pickers = elements.setupScreen.querySelectorAll("[data-color-picker]");
+
+      for (const picker of pickers) {
+        const playerIndex = Number(picker.dataset.colorPicker);
+        const groupName = getColorGroupName(playerIndex);
+        const options = picker.querySelector("[data-color-options]");
+        const defaultColor = normalizePlayerColor(DEFAULT_PLAYERS[playerIndex]?.color, playerIndex);
+
+        options.innerHTML = "";
+        for (const color of PLAYER_COLORS) {
+          const id = `${groupName}-${color.name.toLowerCase()}`;
+          const label = document.createElement("label");
+          label.className = "color-option";
+          label.title = color.name;
+
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = groupName;
+          input.id = id;
+          input.value = color.value;
+          input.setAttribute("aria-label", color.name);
+          input.checked = color.value.toLowerCase() === defaultColor.toLowerCase();
+
+          const swatch = document.createElement("span");
+          swatch.className = "color-swatch";
+          swatch.style.setProperty("--swatch-color", color.value);
+
+          label.append(input, swatch);
+          options.append(label);
+        }
+      }
+    }
+
     function populateControlHints() {
       const rows = elements.setupScreen.querySelectorAll("[data-controls-player]");
 
@@ -373,7 +408,7 @@
         const labels = getControlLabels(playerIndex);
 
         row.innerHTML = "";
-        row.style.gridTemplateColumns = `repeat(${Math.max(1, labels.length)}, minmax(0, 1fr))`;
+        row.style.gridTemplateColumns = `repeat(${Math.max(1, labels.length)}, var(--keycap-width, 25px))`;
 
         for (const label of labels.length ? labels : ["-"]) {
           const key = document.createElement("kbd");
@@ -387,6 +422,101 @@
   function sanitizeName(value, fallback) {
     const trimmed = value.trim().replace(/\s+/g, " ");
     return trimmed || fallback;
+  }
+
+  function getColorGroupName(playerIndex) {
+    return playerIndex === 0 ? "playerOneColor" : "playerTwoColor";
+  }
+
+  function readPlayerColor(playerIndex) {
+    const group = getSetupForm()?.elements[getColorGroupName(playerIndex)];
+
+    return normalizePlayerColor(group?.value, playerIndex);
+  }
+
+  function setPlayerColor(playerIndex, color) {
+    const group = getSetupForm()?.elements[getColorGroupName(playerIndex)];
+    if (group) {
+      group.value = normalizePlayerColor(color, playerIndex);
+    }
+  }
+
+  function setColorPickerDisabled(playerIndex, disabled) {
+    const group = getSetupForm()?.elements[getColorGroupName(playerIndex)];
+    if (!group) {
+      return;
+    }
+
+    const controls = typeof group.length === "number" ? Array.from(group) : [group];
+    for (const control of controls) {
+      control.disabled = disabled;
+    }
+  }
+
+  function getSetupForm() {
+    return document.querySelector("#setupForm");
+  }
+
+  function normalizePlayerColor(color, playerIndex) {
+    const defaultColor = DEFAULT_PLAYERS[playerIndex]?.color ?? PLAYER_COLORS[0]?.value ?? "#51d88a";
+    const normalized = normalizeHexColor(color);
+    if (!normalized) {
+      return defaultColor;
+    }
+
+    const exact = PLAYER_COLORS.find((entry) => entry.value.toLowerCase() === normalized.toLowerCase());
+    return exact?.value ?? closestPlayerColor(normalized, defaultColor);
+  }
+
+  function closestPlayerColor(color, fallback) {
+    const source = hexToRgb(color);
+    if (!source) {
+      return fallback;
+    }
+
+    let closest = PLAYER_COLORS[0]?.value ?? fallback;
+    let closestDistance = Infinity;
+    for (const option of PLAYER_COLORS) {
+      const target = hexToRgb(option.value);
+      if (!target) {
+        continue;
+      }
+
+      const distance = (
+        (source.r - target.r) ** 2 +
+        (source.g - target.g) ** 2 +
+        (source.b - target.b) ** 2
+      );
+      if (distance < closestDistance) {
+        closest = option.value;
+        closestDistance = distance;
+      }
+    }
+
+    return closest;
+  }
+
+  function normalizeHexColor(color) {
+    if (typeof color !== "string") {
+      return null;
+    }
+
+    const hex = color.trim().replace(/^#/, "");
+    return /^[0-9a-f]{6}$/i.test(hex) ? `#${hex.toLowerCase()}` : null;
+  }
+
+  function hexToRgb(color) {
+    const normalized = normalizeHexColor(color);
+    if (!normalized) {
+      return null;
+    }
+
+    const value = Number.parseInt(normalized.slice(1), 16);
+    return {
+      r: (value >> 16) & 255,
+      g: (value >> 8) & 255,
+      b: value & 255,
+    };
   }
 
   function isDictionaryId(id) {

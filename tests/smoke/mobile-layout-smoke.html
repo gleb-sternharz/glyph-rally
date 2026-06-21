@@ -31,7 +31,10 @@
                 <div class="key-row" data-controls-player="0"></div>
               </div>
               <label class="field"><span>Name</span><input id="playerOneName" name="playerOneName" value="Lime"></label>
-              <label class="field"><span>Color</span><input id="playerOneColor" name="playerOneColor" type="color" value="#51d88a"></label>
+              <fieldset class="field color-field" data-color-picker="0">
+                <legend>Color</legend>
+                <div class="color-options" data-color-options></div>
+              </fieldset>
             </section>
             <section class="player-panel" id="playerTwoPanel">
               <div class="player-heading">
@@ -40,7 +43,10 @@
                 <div class="key-row" data-controls-player="1"></div>
               </div>
               <label class="field"><span>Name</span><input id="playerTwoName" name="playerTwoName" value="Berry"></label>
-              <label class="field"><span>Color</span><input id="playerTwoColor" name="playerTwoColor" type="color" value="#5aa7ff"></label>
+              <fieldset class="field color-field" data-color-picker="1">
+                <legend>Color</legend>
+                <div class="color-options" data-color-options></div>
+              </fieldset>
             </section>
           </div>
           <div class="settings-grid">
@@ -123,6 +129,7 @@
         "use strict";
 
         setTimeout(() => {
+          assert(document.querySelectorAll(".color-swatch").length === 12, "Expected generated color swatches.");
           document.querySelector("#setupScreen").style.paddingBottom = "720px";
           window.scrollTo(0, document.body.scrollHeight);
           document.querySelector("#setupForm").requestSubmit();

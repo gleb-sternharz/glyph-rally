@@ -20,8 +20,8 @@ Most high-level knobs are defined in `styles/common.css` under `:root`:
 | `--page-gutter` | Horizontal page gutter on desktop/tablet |
 | `--page-padding-block` | Top and bottom page padding |
 | `--radius` | Main radius for panels, controls, arena, cards |
-| `--radius-small` | Smaller radius for player color marks and keycaps |
-| `--control-height` | Text, color, and select control height |
+| `--radius-small` | Smaller radius for player color marks, swatches, and keycaps |
+| `--control-height` | Text and select control height |
 | `--primary-button-height` | Start/resume button height |
 | `--icon-button-size` | Pause, restart, and setup button size |
 | `--title-size` | Setup screen main heading size |
@@ -37,6 +37,7 @@ Setup screen layout:
 - `styles/setup.css` `.setup-screen`: two-column desktop layout.
 - `styles/setup.css` `.setup-form`: vertical spacing between form sections.
 - `styles/setup.css` `.settings-grid`: challenge, speed, field size, dictionary, and theme grid.
+- `styles/setup.css` `.color-options` and `.color-swatch`: predefined player color swatches.
 - `styles/setup.css` media queries at `840px` and `520px`: tablet and mobile layout changes.
 
 Game screen layout:
@@ -111,6 +112,7 @@ Game text:
 
 - read setup form values
 - populate the dictionary dropdown
+- populate player color swatches from `src/config.js` `PLAYER_COLORS`
 - render keyboard hints from `src/config.js` `KEY_MAP`
 - apply saved preferences
 - toggle disabled setup states
