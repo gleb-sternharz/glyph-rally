@@ -104,6 +104,7 @@ Game text:
 
 - read setup form values
 - populate the dictionary dropdown
+- render keyboard hints from `config.js` `KEY_MAP`
 - apply saved preferences
 - toggle disabled setup states
 - render scorecards and target words

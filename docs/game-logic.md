@@ -27,6 +27,8 @@ On each update:
 7. Tails are trimmed or growth is applied.
 8. The engine reports events back to `app.js`.
 
+Slow and fast speeds use simultaneous updates for all alive snakes. Manual speed passes the pressed player's index into the engine, so only the snake controlled by that key moves on that key press.
+
 ## Border Behavior
 
 Board edges wrap. A snake leaving the right side appears on the left side, and the same applies to all other borders.
@@ -61,7 +63,7 @@ Each round:
 5. Hitting any other icon shrinks the snake.
 6. A new target round starts immediately after any symbol hit.
 
-The dictionary JSON does not provide ids. `dictionary.js` derives `matchKey` from the icon path, so icons should be unique within a dictionary.
+Dictionary entries do not provide ids. `dictionary.js` derives `matchKey` from the icon path, so icons should be unique within a dictionary.
 
 ## End Conditions
 

@@ -47,12 +47,7 @@
                 <input id="playerOneColor" name="playerOneColor" type="color" value="#51d88a">
               </label>
 
-              <div class="key-row" aria-label="Player 1 controls">
-                <kbd>W</kbd>
-                <kbd>A</kbd>
-                <kbd>S</kbd>
-                <kbd>D</kbd>
-              </div>
+              <div class="key-row" data-controls-player="0" aria-label="Player 1 controls"></div>
             </section>
 
             <section class="player-panel" id="playerTwoPanel" aria-labelledby="playerTwoTitle">
@@ -71,12 +66,7 @@
                 <input id="playerTwoColor" name="playerTwoColor" type="color" value="#5aa7ff">
               </label>
 
-              <div class="key-row arrow-keys" aria-label="Player 2 controls">
-                <kbd>&uarr;</kbd>
-                <kbd>&larr;</kbd>
-                <kbd>&darr;</kbd>
-                <kbd>&rarr;</kbd>
-              </div>
+              <div class="key-row" data-controls-player="1" aria-label="Player 2 controls"></div>
             </section>
           </div>
 
@@ -149,11 +139,10 @@
 
       <section id="gameScreen" class="game-screen is-hidden" aria-labelledby="gameTitle">
         <header class="game-header">
-          <div>
-            <p class="eyebrow">Match</p>
-            <h1 id="gameTitle">Snake</h1>
+          <div id="readingPrompt" class="reading-prompt is-hidden" aria-live="polite">
+            <strong id="targetWord">APPLE</strong>
           </div>
-
+          <div class="scoreboard" id="scoreboard" aria-live="polite"></div>
           <div class="toolbar" aria-label="Game controls">
             <button id="pauseButton" class="icon-button" type="button" aria-label="Pause">
               <span aria-hidden="true">||</span>
@@ -166,13 +155,6 @@
             </button>
           </div>
         </header>
-
-        <div class="scoreboard" id="scoreboard" aria-live="polite"></div>
-
-        <div id="readingPrompt" class="reading-prompt is-hidden" aria-live="polite">
-          <span>Find</span>
-          <strong id="targetWord">APPLE</strong>
-        </div>
 
         <div class="arena-wrap">
           <canvas id="gameCanvas" width="960" height="672"></canvas>
@@ -187,7 +169,9 @@
     </main>
 
     <script src="config.js"></script>
-    <script src="dictionary-data.js"></script>
+    <script src="dictionaries/english.js"></script>
+    <script src="dictionaries/german.js"></script>
+    <script src="dictionaries/russian.js"></script>
     <script src="dictionary.js"></script>
     <script src="storage.js"></script>
     <script src="engine.js"></script>

@@ -7,8 +7,8 @@ This is a standalone browser game. It has no build step, no external packages, a
 `index.html` loads the scripts in dependency order:
 
 1. `config.js` defines global constants and selectable options.
-2. `dictionary-data.js` exposes the dictionary JSON text for `file://` use.
-3. `dictionary.js` parses dictionary data and loads SVG icon images.
+2. `dictionaries/*.js` registers per-language word/icon object arrays.
+3. `dictionary.js` normalizes dictionary data and loads SVG icon images.
 4. `storage.js` reads and writes local preferences.
 5. `engine.js` owns game state and game rules.
 6. `renderer.js` draws the board, items, and snakes on the canvas.
@@ -29,8 +29,8 @@ The files attach their APIs to `window.SnakeConfig`, `window.SnakeDictionary`, `
 
 `dictionary.js` is a small asset/data runtime. It parses configured dictionary data, normalizes words to uppercase, creates internal `matchKey` values from icon paths, and draws SVG icons on the canvas.
 
-## Local File Constraint
+## Dictionary Loading
 
-Browsers block `fetch()` and `XMLHttpRequest` for local JSON when `index.html` is opened through `file://`. The project keeps real JSON files in `dictionaries/`, but mirrors their text in `dictionary-data.js` so the game still works without a server.
+The project uses plain JavaScript dictionary files instead of JSON files. This keeps the game runnable from `file://` without `fetch()`, `XMLHttpRequest`, modules, or a local server.
 
-If the app later moves behind a local server, `dictionary.js` can be changed to fetch the configured JSON paths directly and `dictionary-data.js` can be removed.
+Each `dictionaries/*.js` file adds entries to `window.SnakeDictionarySources`, and `dictionary.js` consumes the configured sources directly.

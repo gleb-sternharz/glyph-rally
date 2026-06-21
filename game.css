@@ -73,7 +73,7 @@
 }
 
 .reading-prompt {
-  width: min(100%, var(--arena-preferred-width, 720px));
+  width: min(50%, var(--arena-preferred-width, 150px));
   justify-self: center;
   border: 1px solid var(--line);
   border-radius: var(--radius);

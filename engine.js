@@ -62,7 +62,7 @@
     return game;
   }
 
-  function updateGame(game) {
+  function updateGame(game, options = {}) {
     const events = {
       itemHit: false,
       scoreChanged: false,
@@ -77,11 +77,16 @@
       return events;
     }
 
-    const planned = planMoves(game, alivePlayers);
-    const deaths = findDeaths(game, alivePlayers, planned);
+    const movingPlayers = getMovingPlayers(game, alivePlayers, options.playerIndex);
+    if (!movingPlayers.length) {
+      return events;
+    }
+
+    const planned = planMoves(game, movingPlayers);
+    const deaths = findDeaths(game, movingPlayers, alivePlayers, planned);
     applyDeaths(game, deaths);
 
-    for (const player of alivePlayers) {
+    for (const player of movingPlayers) {
       if (!player.alive) {
         continue;
       }
@@ -96,6 +101,14 @@
 
     events.gameOver = events.boardFilled || isGameOver(game);
     return events;
+  }
+
+  function getMovingPlayers(game, alivePlayers, playerIndex) {
+    if (isAutoSpeed(game) || playerIndex === undefined) {
+      return alivePlayers;
+    }
+
+    return alivePlayers.filter((player) => player.index === playerIndex);
   }
 
   function setDirection(game, playerIndex, nextDirName) {
@@ -207,10 +220,10 @@
     return planned;
   }
 
-  function findDeaths(game, alivePlayers, planned) {
+  function findDeaths(game, movingPlayers, alivePlayers, planned) {
     const deaths = new Set();
 
-    for (const player of alivePlayers) {
+    for (const player of movingPlayers) {
       const head = planned.get(player.index);
       for (const rival of alivePlayers) {
         const canTrimTail = rival.index === player.index && rival.pendingGrow === 0;
@@ -221,7 +234,7 @@
       }
     }
 
-    if (game.mode === 2) {
+    if (game.mode === 2 && movingPlayers.length > 1) {
       addHeadCollisionDeaths(game, planned, deaths);
     }
 

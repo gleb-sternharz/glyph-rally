@@ -7,8 +7,10 @@
     DICTIONARIES,
     FIELD_SIZES,
     GAME_TYPES,
+    KEY_MAP,
     SPEEDS,
   } = window.SnakeConfig;
+  const CONTROL_HINT_DIRECTIONS = ["up", "left", "down", "right"];
 
   function createUi() {
     const elements = {
@@ -32,6 +34,7 @@
     };
     const playerMarks = elements.setupScreen.querySelectorAll(".player-mark");
     populateDictionarySelect();
+    populateControlHints();
 
     function applyPrefs(prefs) {
       if (!prefs) {
@@ -285,6 +288,24 @@
         ? DEFAULT_DICTIONARY_ID
         : select.options[0]?.value ?? "";
     }
+
+    function populateControlHints() {
+      const rows = elements.setupScreen.querySelectorAll("[data-controls-player]");
+
+      for (const row of rows) {
+        const playerIndex = Number(row.dataset.controlsPlayer);
+        const labels = getControlLabels(playerIndex);
+
+        row.innerHTML = "";
+        row.style.gridTemplateColumns = `repeat(${Math.max(1, labels.length)}, minmax(0, 1fr))`;
+
+        for (const label of labels.length ? labels : ["-"]) {
+          const key = document.createElement("kbd");
+          key.textContent = label;
+          row.append(key);
+        }
+      }
+    }
   }
 
   function sanitizeName(value, fallback) {
@@ -294,6 +315,41 @@
 
   function isDictionaryId(id) {
     return DICTIONARIES.some((dictionary) => dictionary.id === id);
+  }
+
+  function getControlLabels(playerIndex) {
+    return CONTROL_HINT_DIRECTIONS.flatMap((direction) => (
+      Object.entries(KEY_MAP)
+        .filter(([, binding]) => binding.player === playerIndex && binding.dir === direction)
+        .map(([code]) => formatKeyCode(code))
+    ));
+  }
+
+  function formatKeyCode(code) {
+    const labels = {
+      ArrowUp: "\u2191",
+      ArrowLeft: "\u2190",
+      ArrowDown: "\u2193",
+      ArrowRight: "\u2192",
+      Space: "Space",
+      Enter: "Enter",
+      Escape: "Esc",
+    };
+
+    if (labels[code]) {
+      return labels[code];
+    }
+    if (/^Key[A-Z]$/.test(code)) {
+      return code.slice(3);
+    }
+    if (/^Digit[0-9]$/.test(code)) {
+      return code.slice(5);
+    }
+    if (/^Numpad[0-9]$/.test(code)) {
+      return `Num ${code.slice(6)}`;
+    }
+
+    return code.replace(/([a-z])([A-Z])/g, "$1 $2");
   }
 
   function cssVar(rootStyle, name) {

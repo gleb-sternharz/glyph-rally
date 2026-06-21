@@ -53,27 +53,22 @@
   }
 
   function parseDictionary(option) {
-    const raw = window.SnakeDictionaryFiles?.[option.path];
-    if (!raw) {
+    const data = window.SnakeDictionarySources?.[option.source];
+    if (!data) {
       return null;
     }
 
-    try {
-      const data = JSON.parse(raw);
-      const rawEntries = Array.isArray(data) ? data : data.entries;
-      const entries = Array.isArray(rawEntries)
-        ? rawEntries.map(normalizeEntry).filter(Boolean)
-        : [];
+    const rawEntries = Array.isArray(data) ? data : data.entries;
+    const entries = Array.isArray(rawEntries)
+      ? rawEntries.map(normalizeEntry).filter(Boolean)
+      : [];
 
-      return {
-        id: option.id,
-        label: data.label || option.label,
-        path: option.path,
-        entries,
-      };
-    } catch {
-      return null;
-    }
+    return {
+      id: option.id,
+      label: data.label || option.label,
+      source: option.source,
+      entries,
+    };
   }
 
   function normalizeEntry(entry) {

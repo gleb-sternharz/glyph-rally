@@ -72,12 +72,12 @@
     runtime.animationId = requestAnimationFrame(loop);
   }
 
-  function stepGame() {
+  function stepGame(options) {
     if (!game || runtime.over) {
       return;
     }
 
-    const events = engine.updateGame(game);
+    const events = engine.updateGame(game, options);
     if (events.scoreChanged) {
       ui.renderScoreboard(game.players);
     }
@@ -130,12 +130,12 @@
     }
   }
 
-  function advanceManualStep() {
+  function advanceManualStep(playerIndex) {
     if (!game || game.speed !== "manual" || runtime.paused || runtime.over) {
       return;
     }
 
-    stepGame();
+    stepGame({ playerIndex });
     draw();
   }
 
@@ -190,7 +190,7 @@
     if (binding.player < game.mode) {
       const accepted = engine.setDirection(game, binding.player, binding.dir);
       if (accepted) {
-        advanceManualStep();
+        advanceManualStep(binding.player);
       }
     }
   });

@@ -2,10 +2,10 @@
   "use strict";
 
   // Preferred visible cell size in CSS pixels; the renderer keeps the canvas sharp.
-  const CELL_SIZE = 18;
+  const CELL_SIZE = 32;
 
   const FIELD_SIZES = {
-    small: { cols: 30, rows: 21 },
+    small: { cols: 40, rows: 20 },
     medium: { cols: 40, rows: 28 },
     large: { cols: 50, rows: 35 },
   };
@@ -42,14 +42,14 @@
   };
 
   const KEY_MAP = {
-    KeyW: { player: 0, dir: "up" },
-    KeyA: { player: 0, dir: "left" },
-    KeyS: { player: 0, dir: "down" },
-    KeyD: { player: 0, dir: "right" },
-    ArrowUp: { player: 1, dir: "up" },
-    ArrowLeft: { player: 1, dir: "left" },
-    ArrowDown: { player: 1, dir: "down" },
-    ArrowRight: { player: 1, dir: "right" },
+    ArrowUp: { player: 0, dir: "up" },
+    ArrowLeft: { player: 0, dir: "left" },
+    ArrowDown: { player: 0, dir: "down" },
+    ArrowRight: { player: 0, dir: "right" },
+    KeyW: { player: 1, dir: "up" },
+    KeyA: { player: 1, dir: "left" },
+    KeyS: { player: 1, dir: "down" },
+    KeyD: { player: 1, dir: "right" },
   };
 
   const DEFAULT_PLAYERS = [
@@ -75,9 +75,9 @@
   const DEFAULT_DICTIONARY_ID = "english";
 
   const DICTIONARIES = [
-    { id: "english", label: "English", path: "dictionaries/english.json" },
-    { id: "german", label: "Deutsch", path: "dictionaries/german.json" },
-    { id: "russian", label: "Русский", path: "dictionaries/russian.json" },
+    { id: "english", label: "English", source: "english" },
+    { id: "german", label: "Deutsch", source: "german" },
+    { id: "russian", label: "Русский", source: "russian" },
   ];
 
   window.SnakeConfig = {
