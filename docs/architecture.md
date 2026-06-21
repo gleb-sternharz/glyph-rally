@@ -4,10 +4,10 @@ This is a standalone browser game. It has no build step, no external packages, a
 
 ## Runtime Flow
 
-`index.html` loads the scripts in dependency order:
+`index.html` loads `boot.js`. The boot script then loads the runtime files in dependency order:
 
 1. `config.js` defines global constants and selectable options.
-2. `dictionaries/*.js` registers per-language word/icon object arrays.
+2. `boot.js` loads `dictionaries/*.js` from `SnakeConfig.DICTIONARIES`.
 3. `dictionary.js` normalizes dictionary data and loads SVG icon images.
 4. `storage.js` reads and writes local preferences.
 5. `engine.js` owns game state and game rules.
@@ -34,3 +34,5 @@ The files attach their APIs to `window.SnakeConfig`, `window.SnakeDictionary`, `
 The project uses plain JavaScript dictionary files instead of JSON files. This keeps the game runnable from `file://` without `fetch()`, `XMLHttpRequest`, modules, or a local server.
 
 Each `dictionaries/*.js` file adds entries to `window.SnakeDictionarySources`, and `dictionary.js` consumes the configured sources directly.
+
+Native ES module `import` is intentionally not used because browser module loading is not reliable when opening this project directly through `file://`.

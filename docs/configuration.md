@@ -35,7 +35,7 @@ Dictionary entries intentionally do not contain ids. At runtime, `dictionary.js`
 
 Keep icon paths unique inside a dictionary. Reading mode uses the icon path to decide which rendered symbol matches the target word.
 
-After adding a new dictionary file, add it to `index.html` before `dictionary.js`, then add an option to `DICTIONARIES` in `config.js` using the same `source` key.
+After adding a new dictionary file, add an option to `DICTIONARIES` in `config.js` using the same `source` key. `boot.js` automatically loads `dictionaries/<source>.js`.
 
 ## Icons
 
