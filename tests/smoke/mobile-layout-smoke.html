@@ -150,7 +150,13 @@
 
             setTimeout(() => {
               assert(canvas.toDataURL() !== beforeMove, "Expected D-pad to move manual snake.");
-              document.querySelector("#result").textContent = "mobile layout smoke ok";
+              window.history.back();
+
+              setTimeout(() => {
+                assert(!document.querySelector("#setupScreen").classList.contains("is-hidden"), "Expected browser back to show setup.");
+                assert(document.querySelector("#gameScreen").classList.contains("is-hidden"), "Expected browser back to hide game.");
+                document.querySelector("#result").textContent = "mobile layout smoke ok";
+              }, 100);
             }, 100);
           }, 100);
         }, 100);

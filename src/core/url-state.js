@@ -90,7 +90,7 @@
       url.searchParams.set(`c${playerNumber}`, stripColorHash(player.color));
     });
 
-    window.history.replaceState(null, document.title, url.toString());
+    window.history.replaceState(window.history.state, document.title, url.toString());
   }
 
   function parseMode(value) {

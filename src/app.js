@@ -10,6 +10,8 @@
   const renderer = window.SnakeRenderer.createRenderer(ui.elements.canvas);
   const phoneQuery = window.matchMedia?.("(pointer: coarse) and (max-width: 700px)");
   const narrowQuery = window.matchMedia?.("(max-width: 700px)");
+  const SCREEN_SETUP = "setup";
+  const SCREEN_GAME = "game";
 
   const runtime = {
     running: false,
@@ -22,12 +24,18 @@
   let game = null;
   let resizeFrame = 0;
   let swipeStart = null;
+  let currentScreen = SCREEN_SETUP;
 
-  function startGame(settings) {
+  function startGame(settings, options = {}) {
     sound.unlock();
     stopLoop();
     storage.savePrefs(settings);
     urlState.writeSettings(settings);
+    if (options.skipHistory) {
+      replaceHistoryScreen(SCREEN_GAME);
+    } else {
+      pushGameHistory();
+    }
     ui.applyTheme(settings.theme);
 
     game = engine.createGame(settings);
@@ -44,6 +52,21 @@
     scheduleSettledViewportSync();
 
     runtime.animationId = requestAnimationFrame(loop);
+  }
+
+  function showSetup(options = {}) {
+    stopLoop();
+    game = null;
+    if (options.updateHistory !== false) {
+      replaceHistoryScreen(SCREEN_SETUP);
+    } else {
+      currentScreen = SCREEN_SETUP;
+    }
+    ui.showSetupScreen();
+    ui.scrollToTop();
+    ui.hideOverlay();
+    ui.renderTarget(null);
+    syncSetupPreview();
   }
 
   function stopLoop() {
@@ -225,6 +248,51 @@
     );
   }
 
+  function pushGameHistory() {
+    if (currentScreen === SCREEN_GAME) {
+      replaceHistoryScreen(SCREEN_GAME);
+      return;
+    }
+
+    replaceHistoryScreen(SCREEN_SETUP);
+    if (window.history?.pushState) {
+      window.history.pushState(
+        { ...getHistoryState(), snakeScreen: SCREEN_GAME },
+        document.title,
+        window.location.href
+      );
+    }
+    currentScreen = SCREEN_GAME;
+  }
+
+  function replaceHistoryScreen(screen) {
+    currentScreen = screen;
+    if (!window.history?.replaceState) {
+      return;
+    }
+
+    window.history.replaceState(
+      { ...getHistoryState(), snakeScreen: screen },
+      document.title,
+      window.location.href
+    );
+  }
+
+  function getHistoryState() {
+    const state = window.history?.state;
+    return state && typeof state === "object" ? state : {};
+  }
+
+  function handlePopState(event) {
+    const screen = event.state?.snakeScreen === SCREEN_GAME ? SCREEN_GAME : SCREEN_SETUP;
+    if (screen === SCREEN_GAME) {
+      startGame(ui.readSettings(), { skipHistory: true });
+      return;
+    }
+
+    showSetup({ updateHistory: false });
+  }
+
   ui.elements.setupForm.addEventListener("input", syncSetupPreview);
   ui.elements.setupForm.addEventListener("change", syncSetupPreview);
   ui.elements.setupForm.addEventListener("submit", (event) => {
@@ -243,13 +311,7 @@
   });
   ui.elements.setupButton.addEventListener("click", () => {
     sound.unlock();
-    stopLoop();
-    game = null;
-    ui.showSetupScreen();
-    ui.scrollToTop();
-    ui.hideOverlay();
-    ui.renderTarget(null);
-    syncSetupPreview();
+    showSetup();
   });
 
   for (const button of ui.elements.mobileControlButtons) {
@@ -332,6 +394,7 @@
 
   window.addEventListener("resize", scheduleViewportSync);
   window.addEventListener("orientationchange", scheduleViewportSync);
+  window.addEventListener("popstate", handlePopState);
   if (window.visualViewport?.addEventListener) {
     window.visualViewport.addEventListener("resize", scheduleViewportSync);
     window.visualViewport.addEventListener("scroll", scheduleViewportSync);
@@ -342,6 +405,7 @@
   ui.applyPrefs(urlState.readSettings());
   ui.setPhoneMode(isPhoneViewport());
   syncSetupPreview();
+  replaceHistoryScreen(SCREEN_SETUP);
   finishInitialRender();
 
   function finishSwipe(event) {
