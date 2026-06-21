@@ -205,6 +205,8 @@
         deadSnake: cssVar(rootStyle, "--dead-snake"),
         eye: cssVar(rootStyle, "--eye"),
         deadEye: cssVar(rootStyle, "--dead-eye"),
+        skull: cssVar(rootStyle, "--skull"),
+        skullDetail: cssVar(rootStyle, "--skull-detail"),
         food: cssVar(rootStyle, "--accent"),
         foodHighlight: "rgba(255, 255, 255, 0.45)",
       };

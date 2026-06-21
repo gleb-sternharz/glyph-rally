@@ -57,6 +57,11 @@
     { name: "Berry", color: "#5aa7ff" },
   ];
 
+  const SKULL_COUNT_BY_MODE = {
+    1: 1,
+    2: 2,
+  };
+
   window.SnakeConfig = {
     CELL_SIZE,
     FIELD_SIZES,
@@ -64,6 +69,7 @@
     DIRS,
     KEY_MAP,
     DEFAULT_PLAYERS,
+    SKULL_COUNT_BY_MODE,
     STORAGE_KEY: "localSnakePrefs",
   };
 })(window);

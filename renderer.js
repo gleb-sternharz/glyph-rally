@@ -32,6 +32,7 @@
       ctx.clearRect(0, 0, metrics.width, metrics.height);
       drawBoard(game.board, palette);
       drawFood(game, palette);
+      drawSkulls(game, palette);
       for (const player of game.players) {
         drawSnake(game.board, player, palette);
       }
@@ -91,6 +92,58 @@
         );
         ctx.fill();
       }
+    }
+
+    function drawSkulls(game, palette) {
+      for (const skull of game.skulls) {
+        drawSkull(skull, palette);
+      }
+    }
+
+    function drawSkull(skull, palette) {
+      const size = metrics.cell;
+      const centerX = metrics.offsetX + skull.x * size + size / 2;
+      const centerY = metrics.offsetY + skull.y * size + size / 2;
+      const headRadius = size * 0.29;
+      const jawWidth = size * 0.34;
+      const jawHeight = size * 0.24;
+
+      ctx.fillStyle = palette.skull;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY - size * 0.08, headRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      roundRect(
+        ctx,
+        centerX - jawWidth / 2,
+        centerY + size * 0.04,
+        jawWidth,
+        jawHeight,
+        size * 0.07,
+      );
+      ctx.fill();
+
+      ctx.fillStyle = palette.skullDetail;
+      ctx.beginPath();
+      ctx.arc(centerX - size * 0.11, centerY - size * 0.08, size * 0.075, 0, Math.PI * 2);
+      ctx.arc(centerX + size * 0.11, centerY - size * 0.08, size * 0.075, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY - size * 0.01);
+      ctx.lineTo(centerX - size * 0.05, centerY + size * 0.08);
+      ctx.lineTo(centerX + size * 0.05, centerY + size * 0.08);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = palette.skullDetail;
+      ctx.lineWidth = Math.max(1, size * 0.045);
+      ctx.beginPath();
+      ctx.moveTo(centerX - jawWidth * 0.3, centerY + size * 0.17);
+      ctx.lineTo(centerX + jawWidth * 0.3, centerY + size * 0.17);
+      ctx.moveTo(centerX, centerY + size * 0.07);
+      ctx.lineTo(centerX, centerY + size * 0.24);
+      ctx.stroke();
     }
 
     function drawSnake(board, player, palette) {

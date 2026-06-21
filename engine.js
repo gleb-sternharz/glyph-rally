@@ -1,7 +1,7 @@
 (function (window) {
   "use strict";
 
-  const { CELL_SIZE, DIRS, FIELD_SIZES, SPEEDS } = window.SnakeConfig;
+  const { CELL_SIZE, DIRS, FIELD_SIZES, SPEEDS, SKULL_COUNT_BY_MODE } = window.SnakeConfig;
 
   function createBoard(fieldSize) {
     const size = FIELD_SIZES[fieldSize] ?? FIELD_SIZES.medium;
@@ -21,6 +21,7 @@
       board: createBoard(settings.fieldSize),
       players: [],
       food: [],
+      skulls: [],
       tickMs: getInitialTickMs(settings.speed, settings.mode),
     };
 
@@ -30,6 +31,9 @@
     if (game.mode === 2) {
       placeFood(game);
     }
+    for (let index = 0; index < (SKULL_COUNT_BY_MODE[game.mode] ?? 1); index += 1) {
+      placeSkull(game);
+    }
 
     return game;
   }
@@ -37,6 +41,7 @@
   function updateGame(game) {
     const events = {
       foodEaten: false,
+      skullHit: false,
       gameOver: false,
       boardFilled: false,
     };
@@ -60,6 +65,7 @@
       player.body.unshift(nextHead);
 
       const foodIndex = game.food.findIndex((food) => sameCell(food, nextHead));
+      const skullIndex = game.skulls.findIndex((skull) => sameCell(skull, nextHead));
       if (foodIndex >= 0) {
         game.food.splice(foodIndex, 1);
         player.score += 1;
@@ -68,12 +74,13 @@
         events.foodEaten = true;
         events.boardFilled = !placeFood(game);
       }
-
-      if (player.pendingGrow > 0) {
-        player.pendingGrow -= 1;
-      } else {
-        player.body.pop();
+      if (skullIndex >= 0) {
+        game.skulls.splice(skullIndex, 1);
+        events.skullHit = true;
+        placeSkull(game);
       }
+
+      trimTailAfterMove(player, skullIndex >= 0);
     }
 
     events.gameOver = events.boardFilled || isGameOver(game);
@@ -242,6 +249,14 @@
   }
 
   function placeFood(game) {
+    return placeItem(game, game.food);
+  }
+
+  function placeSkull(game) {
+    return placeItem(game, game.skulls);
+  }
+
+  function placeItem(game, target) {
     const occupied = new Set();
     for (const player of game.players) {
       for (const segment of player.body) {
@@ -250,6 +265,9 @@
     }
     for (const food of game.food) {
       occupied.add(cellKey(food));
+    }
+    for (const skull of game.skulls) {
+      occupied.add(cellKey(skull));
     }
 
     const freeCells = [];
@@ -266,8 +284,27 @@
       return false;
     }
 
-    game.food.push(freeCells[Math.floor(Math.random() * freeCells.length)]);
+    target.push(freeCells[Math.floor(Math.random() * freeCells.length)]);
     return true;
+  }
+
+  function trimTailAfterMove(player, hitSkull) {
+    let removals = 1;
+
+    if (player.pendingGrow > 0) {
+      player.pendingGrow -= 1;
+      removals = hitSkull ? 2 : 0;
+    } else if (hitSkull) {
+      removals = 2;
+    }
+
+    for (let index = 0; index < removals; index += 1) {
+      player.body.pop();
+    }
+
+    if (player.body.length === 0) {
+      player.alive = false;
+    }
   }
 
   function isGameOver(game) {

@@ -21,6 +21,8 @@
   --dead-snake: #74756d;
   --eye: #11120f;
   --dead-eye: #2f312b;
+  --skull: #f4f0e8;
+  --skull-detail: #11120f;
 }
 
 :root[data-theme="light"] {
@@ -46,6 +48,8 @@
   --dead-snake: #9b9d92;
   --eye: #11120f;
   --dead-eye: #676a61;
+  --skull: #171a14;
+  --skull-detail: #faf6ec;
 }
 
 * {
