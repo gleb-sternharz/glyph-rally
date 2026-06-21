@@ -1,7 +1,7 @@
 (function (window) {
   "use strict";
 
-  const { DEFAULT_PLAYERS, FIELD_SIZES, SPEEDS } = window.SnakeConfig;
+  const { DEFAULT_PLAYERS, FIELD_SIZES, GAME_TYPES, SPEEDS } = window.SnakeConfig;
 
   function createUi() {
     const elements = {
@@ -19,6 +19,8 @@
       overlayTitle: document.querySelector("#overlayTitle"),
       overlayText: document.querySelector("#overlayText"),
       overlayButton: document.querySelector("#overlayButton"),
+      readingPrompt: document.querySelector("#readingPrompt"),
+      targetWord: document.querySelector("#targetWord"),
     };
     const playerMarks = elements.setupScreen.querySelectorAll(".player-mark");
 
@@ -29,6 +31,9 @@
 
       if (prefs.mode) {
         elements.setupForm.elements.mode.value = String(prefs.mode);
+      }
+      if (prefs.challenge) {
+        elements.setupForm.elements.challenge.value = prefs.challenge;
       }
       if (prefs.speed) {
         elements.setupForm.elements.speed.value = prefs.speed;
@@ -67,6 +72,9 @@
 
     function readSettings() {
       const mode = Number(elements.setupForm.elements.mode.value) === 1 ? 1 : 2;
+      const challenge = GAME_TYPES[elements.setupForm.elements.challenge.value]
+        ? elements.setupForm.elements.challenge.value
+        : GAME_TYPES.classic;
       const firstName = sanitizeName(
         elements.setupForm.elements.playerOneName.value,
         DEFAULT_PLAYERS[0].name,
@@ -85,6 +93,7 @@
 
       return {
         mode,
+        challenge,
         speed,
         fieldSize,
         theme,
@@ -126,6 +135,16 @@
         card.append(name, score);
         elements.scoreboard.append(card);
       }
+    }
+
+    function renderTarget(game) {
+      if (game?.challenge === GAME_TYPES.reading && game.targetEntry) {
+        elements.targetWord.textContent = game.targetEntry.word;
+        elements.readingPrompt.classList.remove("is-hidden");
+        return;
+      }
+
+      elements.readingPrompt.classList.add("is-hidden");
     }
 
     function formatGameResult(result) {
@@ -221,6 +240,7 @@
       hideOverlay,
       readSettings,
       renderScoreboard,
+      renderTarget,
       resetPauseButton,
       setPauseButtonPaused,
       showGameScreen,

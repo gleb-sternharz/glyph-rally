@@ -1,7 +1,7 @@
 (function (window) {
   "use strict";
 
-  const { FIELD_SIZES, SPEEDS, STORAGE_KEY } = window.SnakeConfig;
+  const { FIELD_SIZES, GAME_TYPES, SPEEDS, STORAGE_KEY } = window.SnakeConfig;
 
   function loadPrefs() {
     try {
@@ -27,6 +27,7 @@
         STORAGE_KEY,
         JSON.stringify({
           mode: settings.mode,
+          challenge: settings.challenge,
           speed: settings.speed,
           fieldSize: settings.fieldSize,
           theme: settings.theme,
@@ -46,6 +47,9 @@
     const normalized = {};
     if (prefs.mode === 1 || prefs.mode === 2) {
       normalized.mode = prefs.mode;
+    }
+    if (prefs.challenge && GAME_TYPES[prefs.challenge]) {
+      normalized.challenge = prefs.challenge;
     }
     if (prefs.speed && SPEEDS[prefs.speed]) {
       normalized.speed = prefs.speed;

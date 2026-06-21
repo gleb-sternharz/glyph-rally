@@ -81,6 +81,18 @@
           </div>
 
           <div class="settings-grid">
+            <fieldset class="setting-picker setting-picker--two">
+              <legend>Challenge</legend>
+              <label>
+                <input type="radio" name="challenge" value="classic" checked>
+                <span>Classic</span>
+              </label>
+              <label>
+                <input type="radio" name="challenge" value="reading">
+                <span>Reading</span>
+              </label>
+            </fieldset>
+
             <fieldset class="setting-picker setting-picker--three">
               <legend>Speed</legend>
               <label>
@@ -113,7 +125,7 @@
               </label>
             </fieldset>
 
-            <fieldset class="setting-picker setting-picker--two">
+            <fieldset class="setting-picker setting-picker--two setting-picker--wide">
               <legend>Theme</legend>
               <label>
                 <input type="radio" name="theme" value="dark" checked>
@@ -152,6 +164,11 @@
 
         <div class="scoreboard" id="scoreboard" aria-live="polite"></div>
 
+        <div id="readingPrompt" class="reading-prompt is-hidden" aria-live="polite">
+          <span>Find</span>
+          <strong id="targetWord">APPLE</strong>
+        </div>
+
         <div class="arena-wrap">
           <canvas id="gameCanvas" width="960" height="672"></canvas>
           <div id="overlay" class="overlay is-hidden" role="status" aria-live="assertive">
@@ -164,6 +181,7 @@
       </section>
     </main>
 
+    <script src="dictionary.js"></script>
     <script src="config.js"></script>
     <script src="storage.js"></script>
     <script src="engine.js"></script>

@@ -72,6 +72,33 @@
   font-weight: 950;
 }
 
+.reading-prompt {
+  width: min(100%, var(--arena-preferred-width, 720px));
+  justify-self: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 12px 16px;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.reading-prompt span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.reading-prompt strong {
+  color: var(--accent);
+  font-size: clamp(1.6rem, 5vw, 2.8rem);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
 .arena-wrap {
   width: 100%;
   justify-self: center;
@@ -133,6 +160,7 @@ canvas {
 
   .icon-button,
   .score-card,
+  .reading-prompt,
   .arena-wrap {
     border-radius: 0;
   }

@@ -29,6 +29,7 @@
     ui.showGameScreen();
     ui.hideOverlay();
     ui.renderScoreboard(game.players);
+    ui.renderTarget(game);
     draw();
 
     runtime.animationId = requestAnimationFrame(loop);
@@ -77,8 +78,11 @@
     }
 
     const events = engine.updateGame(game);
-    if (events.foodEaten) {
+    if (events.scoreChanged) {
       ui.renderScoreboard(game.players);
+    }
+    if (events.targetChanged) {
+      ui.renderTarget(game);
     }
     if (events.gameOver) {
       finishGame();
@@ -156,6 +160,7 @@
     game = null;
     ui.showSetupScreen();
     ui.hideOverlay();
+    ui.renderTarget(null);
     syncSetupPreview();
   });
 

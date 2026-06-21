@@ -57,10 +57,22 @@
     { name: "Berry", color: "#5aa7ff" },
   ];
 
-  const SKULL_COUNT_BY_MODE = {
-    1: 1,
-    2: 2,
+  const GAME_TYPES = {
+    classic: "classic",
+    reading: "reading",
   };
+
+  const CLASSIC_ITEM_COUNTS_BY_MODE = {
+    1: { apple: 2, skull: 1 },
+    2: { apple: 3, skull: 2 },
+  };
+
+  const READING_SYMBOL_COUNT_BY_MODE = {
+    1: 4,
+    2: 6,
+  };
+
+  const READING_DICTIONARY = window.SnakeDictionary?.entries ?? [];
 
   window.SnakeConfig = {
     CELL_SIZE,
@@ -69,7 +81,10 @@
     DIRS,
     KEY_MAP,
     DEFAULT_PLAYERS,
-    SKULL_COUNT_BY_MODE,
+    CLASSIC_ITEM_COUNTS_BY_MODE,
+    GAME_TYPES,
+    READING_DICTIONARY,
+    READING_SYMBOL_COUNT_BY_MODE,
     STORAGE_KEY: "localSnakePrefs",
   };
 })(window);

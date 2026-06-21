@@ -1,7 +1,33 @@
 (function (window) {
   "use strict";
 
-  const { CELL_SIZE, DIRS, FIELD_SIZES, SPEEDS, SKULL_COUNT_BY_MODE } = window.SnakeConfig;
+  const {
+    CELL_SIZE,
+    CLASSIC_ITEM_COUNTS_BY_MODE,
+    DIRS,
+    FIELD_SIZES,
+    GAME_TYPES,
+    READING_DICTIONARY,
+    READING_SYMBOL_COUNT_BY_MODE,
+    SPEEDS,
+  } = window.SnakeConfig;
+
+  const CLASSIC_ITEMS = {
+    apple: {
+      id: "classic-apple",
+      icon: "apple",
+      word: "APPLE",
+      effect: "grow",
+      score: true,
+    },
+    skull: {
+      id: "classic-skull",
+      icon: "skull",
+      word: "SKULL",
+      effect: "shrink",
+      score: false,
+    },
+  };
 
   function createBoard(fieldSize) {
     const size = FIELD_SIZES[fieldSize] ?? FIELD_SIZES.medium;
@@ -18,30 +44,25 @@
       speed: settings.speed,
       fieldSize: settings.fieldSize,
       theme: settings.theme,
+      challenge: GAME_TYPES[settings.challenge] ? settings.challenge : GAME_TYPES.classic,
       board: createBoard(settings.fieldSize),
       players: [],
-      food: [],
-      skulls: [],
+      items: [],
+      targetEntry: null,
       tickMs: getInitialTickMs(settings.speed, settings.mode),
     };
 
     game.players = settings.players.map((profile, index) => createPlayer(game, profile, index));
-    placeFood(game);
-    placeFood(game);
-    if (game.mode === 2) {
-      placeFood(game);
-    }
-    for (let index = 0; index < (SKULL_COUNT_BY_MODE[game.mode] ?? 1); index += 1) {
-      placeSkull(game);
-    }
+    setupItems(game);
 
     return game;
   }
 
   function updateGame(game) {
     const events = {
-      foodEaten: false,
-      skullHit: false,
+      itemHit: false,
+      scoreChanged: false,
+      targetChanged: false,
       gameOver: false,
       boardFilled: false,
     };
@@ -64,23 +85,9 @@
       const nextHead = planned.get(player.index);
       player.body.unshift(nextHead);
 
-      const foodIndex = game.food.findIndex((food) => sameCell(food, nextHead));
-      const skullIndex = game.skulls.findIndex((skull) => sameCell(skull, nextHead));
-      if (foodIndex >= 0) {
-        game.food.splice(foodIndex, 1);
-        player.score += 1;
-        player.pendingGrow += 2;
-        game.tickMs = getNextTickMs(game.speed, game.tickMs);
-        events.foodEaten = true;
-        events.boardFilled = !placeFood(game);
-      }
-      if (skullIndex >= 0) {
-        game.skulls.splice(skullIndex, 1);
-        events.skullHit = true;
-        placeSkull(game);
-      }
-
-      trimTailAfterMove(player, skullIndex >= 0);
+      const item = takeItemAt(game, nextHead);
+      const hitEffect = item ? resolveItemHit(game, player, item, events) : "none";
+      trimTailAfterMove(player, hitEffect);
     }
 
     events.gameOver = events.boardFilled || isGameOver(game);
@@ -248,26 +255,77 @@
     }
   }
 
-  function placeFood(game) {
-    return placeItem(game, game.food);
+  function setupItems(game) {
+    game.items = [];
+    game.targetEntry = null;
+
+    if (game.challenge === GAME_TYPES.reading) {
+      return startReadingRound(game);
+    }
+
+    return setupClassicItems(game);
   }
 
-  function placeSkull(game) {
-    return placeItem(game, game.skulls);
+  function setupClassicItems(game) {
+    const counts = CLASSIC_ITEM_COUNTS_BY_MODE[game.mode] ?? CLASSIC_ITEM_COUNTS_BY_MODE[1];
+    let placedAll = true;
+
+    for (const [kind, count] of Object.entries(counts)) {
+      for (let index = 0; index < count; index += 1) {
+        placedAll = placeItem(game, createClassicItem(kind)) && placedAll;
+      }
+    }
+
+    return placedAll;
   }
 
-  function placeItem(game, target) {
+  function createClassicItem(kind) {
+    const item = CLASSIC_ITEMS[kind] ?? CLASSIC_ITEMS.apple;
+    return { ...item, kind: "classic" };
+  }
+
+  function startReadingRound(game) {
+    const entries = READING_DICTIONARY;
+    const itemCount = Math.min(
+      entries.length,
+      READING_SYMBOL_COUNT_BY_MODE[game.mode] ?? READING_SYMBOL_COUNT_BY_MODE[1],
+    );
+
+    game.items = [];
+    game.targetEntry = pickRandom(entries);
+
+    if (!game.targetEntry || itemCount === 0) {
+      return false;
+    }
+
+    const distractors = shuffle(entries.filter((entry) => entry.id !== game.targetEntry.id));
+    const roundEntries = shuffle([game.targetEntry, ...distractors.slice(0, itemCount - 1)]);
+    let placedAll = true;
+
+    for (const entry of roundEntries) {
+      placedAll = placeItem(game, {
+        id: `reading-${entry.id}`,
+        kind: "reading",
+        icon: entry.icon,
+        word: entry.word,
+        entryId: entry.id,
+        effect: entry.id === game.targetEntry.id ? "grow" : "shrink",
+        score: entry.id === game.targetEntry.id,
+      }) && placedAll;
+    }
+
+    return placedAll;
+  }
+
+  function placeItem(game, item) {
     const occupied = new Set();
     for (const player of game.players) {
       for (const segment of player.body) {
         occupied.add(cellKey(segment));
       }
     }
-    for (const food of game.food) {
-      occupied.add(cellKey(food));
-    }
-    for (const skull of game.skulls) {
-      occupied.add(cellKey(skull));
+    for (const existingItem of game.items) {
+      occupied.add(cellKey(existingItem));
     }
 
     const freeCells = [];
@@ -284,17 +342,49 @@
       return false;
     }
 
-    target.push(freeCells[Math.floor(Math.random() * freeCells.length)]);
+    game.items.push({
+      ...item,
+      ...freeCells[Math.floor(Math.random() * freeCells.length)],
+    });
     return true;
   }
 
-  function trimTailAfterMove(player, hitSkull) {
+  function takeItemAt(game, cell) {
+    const itemIndex = game.items.findIndex((item) => sameCell(item, cell));
+    if (itemIndex < 0) {
+      return null;
+    }
+
+    return game.items.splice(itemIndex, 1)[0];
+  }
+
+  function resolveItemHit(game, player, item, events) {
+    events.itemHit = true;
+
+    if (item.effect === "grow") {
+      player.score += 1;
+      player.pendingGrow += 2;
+      game.tickMs = getNextTickMs(game.speed, game.tickMs);
+      events.scoreChanged = true;
+    }
+
+    if (game.challenge === GAME_TYPES.reading) {
+      events.boardFilled = !startReadingRound(game);
+      events.targetChanged = true;
+    } else {
+      events.boardFilled = !placeItem(game, createClassicItem(item.icon));
+    }
+
+    return item.effect;
+  }
+
+  function trimTailAfterMove(player, effect) {
     let removals = 1;
 
     if (player.pendingGrow > 0) {
       player.pendingGrow -= 1;
-      removals = hitSkull ? 2 : 0;
-    } else if (hitSkull) {
+      removals = effect === "shrink" ? 2 : 0;
+    } else if (effect === "shrink") {
       removals = 2;
     }
 
@@ -342,6 +432,20 @@
 
   function cellKey(cell) {
     return `${cell.x},${cell.y}`;
+  }
+
+  function pickRandom(items) {
+    return items[Math.floor(Math.random() * items.length)];
+  }
+
+  function shuffle(items) {
+    const copy = [...items];
+    for (let index = copy.length - 1; index > 0; index -= 1) {
+      const swapIndex = Math.floor(Math.random() * (index + 1));
+      [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
+    }
+
+    return copy;
   }
 
   window.SnakeEngine = {
