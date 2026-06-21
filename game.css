@@ -74,6 +74,7 @@
 
 .arena-wrap {
   width: 100%;
+  justify-self: center;
   aspect-ratio: 10 / 7;
   border: 1px solid var(--line);
   border-radius: 8px;

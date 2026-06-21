@@ -1,7 +1,8 @@
 (function (window) {
   "use strict";
 
-  const CELL_SIZE = 12;
+  // Preferred visible cell size in CSS pixels; the renderer keeps the canvas sharp.
+  const CELL_SIZE = 18;
 
   const FIELD_SIZES = {
     small: { cols: 30, rows: 21 },
