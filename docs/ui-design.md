@@ -6,6 +6,8 @@ The UI is split into shared, setup, and game styling:
 - `styles/setup.css`: setup screen, player panels, radio/segmented controls, dictionary select, keyboard hints.
 - `styles/game.css`: game header, toolbar, scoreboard, reading prompt, canvas arena, overlay.
 
+The startup progress bar is `#bootLoader` in `index.html`, styled by `styles/common.css`, and driven by `src/boot.js`.
+
 ## Main Design Tokens
 
 Most high-level knobs are defined in `styles/common.css` under `:root`:
@@ -61,6 +63,7 @@ Common page spacing:
 - `styles/common.css` `--page-gutter`
 - `styles/common.css` `--page-padding-block`
 - `styles/common.css` `.shell`
+- `styles/common.css` `.boot-loader` and `.boot-loader__panel`
 
 Setup spacing:
 
@@ -117,4 +120,4 @@ Game text:
 - measure board-fit constraints for auto-sized fields
 - expose the CSS color palette to `src/presentation/renderer.js`
 
-Game rules should stay in `src/core/engine.js`, and canvas drawing should stay in `src/presentation/renderer.js` and `src/core/dictionary.js`.
+`src/boot.js` owns startup progress and waits for the `snake:ready` event from `src/app.js`. Game rules should stay in `src/core/engine.js`, and canvas drawing should stay in `src/presentation/renderer.js` and `src/core/dictionary.js`.

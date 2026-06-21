@@ -342,6 +342,7 @@
   ui.applyPrefs(urlState.readSettings());
   ui.setPhoneMode(isPhoneViewport());
   syncSetupPreview();
+  finishInitialRender();
 
   function finishSwipe(event) {
     if (!swipeStart || swipeStart.id !== event.pointerId) {
@@ -376,5 +377,31 @@
     if (events.badHit) {
       sound.badHit();
     }
+  }
+
+  async function finishInitialRender() {
+    reportLoadingProgress(90, "Loading icons");
+    await window.SnakeDictionary.preloadIcons(["assets/icons/skull.svg"]);
+
+    reportLoadingProgress(96, "Rendering board");
+    syncSetupPreview();
+    await nextFrame();
+    syncSetupPreview();
+    await nextFrame();
+
+    window.SnakeAppReady = true;
+    window.dispatchEvent(new CustomEvent("snake:ready"));
+  }
+
+  function reportLoadingProgress(progress, label) {
+    window.dispatchEvent(new CustomEvent("snake:loading-progress", {
+      detail: { progress, label },
+    }));
+  }
+
+  function nextFrame() {
+    return new Promise((resolve) => {
+      requestAnimationFrame(resolve);
+    });
   }
 })(window);

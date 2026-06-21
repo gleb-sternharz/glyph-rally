@@ -52,6 +52,18 @@
     drawIconFallback(ctx, box, tools);
   }
 
+  function preloadIcons(extraSources = []) {
+    const sources = new Set(extraSources.filter((source) => typeof source === "string"));
+
+    for (const dictionary of dictionaries.values()) {
+      for (const entry of dictionary.entries) {
+        sources.add(entry.icon);
+      }
+    }
+
+    return Promise.allSettled([...sources].map(preloadIcon)).then(() => undefined);
+  }
+
   function parseDictionary(option) {
     const data = window.SnakeDictionarySources?.[option.source];
     if (!data) {
@@ -100,6 +112,19 @@
     return image;
   }
 
+  function preloadIcon(src) {
+    return new Promise((resolve) => {
+      const image = getImage(src);
+      if (image.complete) {
+        resolve();
+        return;
+      }
+
+      image.addEventListener("load", resolve, { once: true });
+      image.addEventListener("error", resolve, { once: true });
+    });
+  }
+
   function iconBox(item, metrics) {
     const padding = metrics.cell * 0.08;
 
@@ -129,5 +154,6 @@
     getEntries,
     getOptions,
     hasDictionary,
+    preloadIcons,
   };
 })(window);

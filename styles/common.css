@@ -173,6 +173,64 @@ h2 {
   display: none !important;
 }
 
+.boot-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: var(--text);
+  background:
+    linear-gradient(120deg, rgba(255, 207, 92, 0.18), transparent 36%),
+    radial-gradient(circle at 78% 22%, rgba(81, 216, 138, 0.18), transparent 30%),
+    var(--bg);
+  transition: opacity 180ms ease, visibility 180ms ease;
+}
+
+.boot-loader.is-complete {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.boot-loader__panel {
+  width: min(360px, 100%);
+}
+
+.boot-loader__title {
+  margin-bottom: 22px;
+  font-size: clamp(3rem, 12vw, 5.2rem);
+  font-weight: 950;
+  line-height: 0.86;
+  letter-spacing: 0;
+}
+
+.boot-progress {
+  height: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 2px;
+  background: var(--surface-strong);
+  overflow: hidden;
+}
+
+.boot-progress span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: calc(var(--radius) - 3px);
+  background: var(--accent);
+  transition: width 140ms ease;
+}
+
+.boot-loader__text {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
 @media (max-width: 840px) {
   .shell {
     width: min(100% - 20px, 720px);

@@ -9,6 +9,25 @@
     <link rel="stylesheet" href="styles/game.css">
   </head>
   <body>
+    <div id="bootLoader" class="boot-loader" role="status" aria-live="polite">
+      <div class="boot-loader__panel">
+        <p class="eyebrow">Loading</p>
+        <div class="boot-loader__title">Snake</div>
+        <div
+          id="bootProgress"
+          class="boot-progress"
+          role="progressbar"
+          aria-label="Loading progress"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+        >
+          <span id="bootProgressBar"></span>
+        </div>
+        <p id="bootProgressText" class="boot-loader__text">Preparing game</p>
+      </div>
+    </div>
+
     <main class="shell">
       <section id="setupScreen" class="setup-screen" aria-labelledby="setupTitle">
         <div class="setup-copy">
