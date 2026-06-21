@@ -1,10 +1,10 @@
 # Configuration
 
-Most gameplay settings live in `config.js`. Setup-screen styling lives in CSS, while the selected user preferences are stored in browser `localStorage`.
+Most gameplay settings live in `src/config.js`. Setup-screen styling lives in `styles/`, while the selected user preferences are stored in browser `localStorage`.
 
 ## Gameplay Config
 
-Edit `config.js` for:
+Edit `src/config.js` for:
 
 - `CELL_SIZE`: preferred visible cell size in CSS pixels. The renderer keeps the canvas sharp at device pixel ratio.
 - `FIELD_SIZES`: named board sizes used by the setup field-size picker.
@@ -25,30 +25,30 @@ Dictionary files live in `dictionaries/`. Each file is a JavaScript file that re
 
   window.SnakeDictionarySources = window.SnakeDictionarySources || {};
   window.SnakeDictionarySources.english = [
-    { word: "APPLE", icon: "icons/apple.svg" },
-    { word: "CAR", icon: "icons/car.svg" },
+    { word: "APPLE", icon: "assets/icons/apple.svg" },
+    { word: "CAR", icon: "assets/icons/car.svg" },
   ];
 })(window);
 ```
 
-Dictionary entries intentionally do not contain ids. At runtime, `dictionary.js` derives an internal `matchKey` from the icon path.
+Dictionary entries intentionally do not contain ids. At runtime, `src/core/dictionary.js` derives an internal `matchKey` from the icon path.
 
 Keep icon paths unique inside a dictionary. Reading mode uses the icon path to decide which rendered symbol matches the target word.
 
-After adding a new dictionary file, add an option to `DICTIONARIES` in `config.js` using the same `source` key. `boot.js` automatically loads `dictionaries/<source>.js`.
+After adding a new dictionary file, add an option to `DICTIONARIES` in `src/config.js` using the same `source` key. `src/boot.js` automatically loads `dictionaries/<source>.js`.
 
 ## Icons
 
-Icons live in `icons/` as SVG files. A dictionary entry points to an SVG with a relative path such as `icons/apple.svg`.
+Icons live in `assets/icons/` as SVG files. A dictionary entry points to an SVG with a relative path such as `assets/icons/apple.svg`.
 
 Classic mode also uses SVGs:
 
-- Apple: `icons/apple.svg`
-- Skull: `icons/skull.svg`
+- Apple: `assets/icons/apple.svg`
+- Skull: `assets/icons/skull.svg`
 
 ## Preferences
 
-`storage.js` saves these settings:
+`src/core/storage.js` saves these settings:
 
 - player count
 - challenge mode
@@ -58,11 +58,11 @@ Classic mode also uses SVGs:
 - theme
 - player names and colors
 
-The storage key is `localSnakePrefs`, configured in `config.js`.
+The storage key is `localSnakePrefs`, configured in `src/config.js`.
 
 ## Shareable URLs
 
-`url-state.js` keeps the address bar synchronized with the setup form. A copied URL can restore a specific game setup on another browser:
+`src/core/url-state.js` keeps the address bar synchronized with the setup form. A copied URL can restore a specific game setup on another browser:
 
 ```text
 index.html?mode=2&challenge=reading&dictionary=greek&speed=slow&field=large&theme=light&p1=Alex&c1=51d88a&p2=Mira&c2=5aa7ff

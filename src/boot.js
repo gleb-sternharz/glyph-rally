@@ -2,14 +2,14 @@
   "use strict";
 
   const RUNTIME_SCRIPTS = [
-    "dictionary.js",
-    "storage.js",
-    "url-state.js",
-    "engine.js",
-    "renderer.js",
-    "ui.js",
-    "sound.js",
-    "app.js",
+    "src/core/dictionary.js",
+    "src/core/storage.js",
+    "src/core/url-state.js",
+    "src/core/engine.js",
+    "src/presentation/renderer.js",
+    "src/presentation/ui.js",
+    "src/presentation/sound.js",
+    "src/app.js",
   ];
 
   boot().catch((error) => {
@@ -22,7 +22,7 @@
   });
 
   async function boot() {
-    await loadScript("config.js");
+    await loadScript("src/config.js");
 
     for (const script of getDictionaryScripts()) {
       await loadScript(script);

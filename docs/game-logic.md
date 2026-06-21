@@ -1,6 +1,6 @@
 # Game Logic
 
-The game rules live in `engine.js`.
+The game rules live in `src/core/engine.js`.
 
 ## Game Creation
 
@@ -25,9 +25,9 @@ On each update:
 5. Alive players move into their planned head cells.
 6. Item hits are resolved.
 7. Tails are trimmed or growth is applied.
-8. The engine reports events back to `app.js`.
+8. The engine reports events back to `src/app.js`.
 
-The engine reports good-hit, bad-hit, score, target, board-filled, and game-over events. `app.js` uses those events to update the UI and play sounds; the engine itself does not depend on audio or DOM code.
+The engine reports good-hit, bad-hit, score, target, board-filled, and game-over events. `src/app.js` uses those events to update the UI and play sounds; the engine itself does not depend on audio or DOM code.
 
 Slow and fast speeds use simultaneous updates for all alive snakes. Manual speed passes the pressed player's index into the engine, so only the snake controlled by that key moves on that key press.
 
@@ -66,7 +66,7 @@ Each round:
 6. The remaining icons stay in place after a wrong hit, so the player can keep searching for the target.
 7. A new target round starts after the correct icon is hit.
 
-Dictionary entries do not provide ids. `dictionary.js` derives `matchKey` from the icon path, so icons should be unique within a dictionary.
+Dictionary entries do not provide ids. `src/core/dictionary.js` derives `matchKey` from the icon path, so icons should be unique within a dictionary.
 
 ## End Conditions
 

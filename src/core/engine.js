@@ -17,7 +17,7 @@
     apple: {
       id: "classic-apple",
       itemType: "apple",
-      icon: "icons/apple.svg",
+      icon: "assets/icons/apple.svg",
       word: "APPLE",
       effect: "grow",
       score: true,
@@ -25,7 +25,7 @@
     skull: {
       id: "classic-skull",
       itemType: "skull",
-      icon: "icons/skull.svg",
+      icon: "assets/icons/skull.svg",
       word: "SKULL",
       effect: "shrink",
       score: false,

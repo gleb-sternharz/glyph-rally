@@ -3,13 +3,13 @@
 
   window.SnakeDictionarySources = window.SnakeDictionarySources || {};
   window.SnakeDictionarySources.english = [
-    { word: "APPLE", icon: "icons/apple.svg" },
-    { word: "PINE", icon: "icons/pine.svg" },
-    { word: "CAR", icon: "icons/car.svg" },
-    { word: "STAR", icon: "icons/star.svg" },
-    { word: "MOON", icon: "icons/moon.svg" },
-    { word: "HOUSE", icon: "icons/house.svg" },
-    { word: "HEART", icon: "icons/heart.svg" },
-    { word: "FISH", icon: "icons/fish.svg" },
+    { word: "APPLE", icon: "assets/icons/apple.svg" },
+    { word: "PINE", icon: "assets/icons/pine.svg" },
+    { word: "CAR", icon: "assets/icons/car.svg" },
+    { word: "STAR", icon: "assets/icons/star.svg" },
+    { word: "MOON", icon: "assets/icons/moon.svg" },
+    { word: "HOUSE", icon: "assets/icons/house.svg" },
+    { word: "HEART", icon: "assets/icons/heart.svg" },
+    { word: "FISH", icon: "assets/icons/fish.svg" },
   ];
 })(window);
