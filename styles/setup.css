@@ -265,7 +265,7 @@ fieldset {
 
 .color-swatch {
   width: 100%;
-  min-height: 36px;
+  aspect-ratio: 1;
   border: 1px solid var(--line);
   border-radius: var(--radius-small);
   background:
