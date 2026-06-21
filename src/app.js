@@ -31,16 +31,17 @@
     ui.applyTheme(settings.theme);
 
     game = engine.createGame(settings);
-    renderer.resize(game.board);
     resetRuntime();
     ui.resetPauseButton();
-    ui.showGameScreen();
-    ui.scrollToTop();
     ui.hideOverlay();
     ui.renderScoreboard(game.players);
     ui.renderTarget(game);
+    ui.showGameScreen();
+    ui.scrollToTop();
+    ui.syncViewportMetrics();
+    renderer.resize(game.board);
     draw();
-    scheduleViewportSync();
+    scheduleSettledViewportSync();
 
     runtime.animationId = requestAnimationFrame(loop);
   }
@@ -205,6 +206,15 @@
   function scheduleViewportSync() {
     cancelAnimationFrame(resizeFrame);
     resizeFrame = requestAnimationFrame(syncViewportState);
+  }
+
+  function scheduleSettledViewportSync() {
+    scheduleViewportSync();
+    requestAnimationFrame(() => {
+      syncViewportState();
+      requestAnimationFrame(syncViewportState);
+    });
+    window.setTimeout(syncViewportState, 120);
   }
 
   function isPhoneViewport() {

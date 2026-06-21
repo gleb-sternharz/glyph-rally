@@ -136,6 +136,7 @@
             assert(document.querySelectorAll(".score-card").length === 1, "Expected one score card.");
             const canvas = document.querySelector("#gameCanvas");
             assert(canvas.width > 0, "Expected sized canvas.");
+            assert(hasCanvasInk(canvas), "Expected board to be drawn before first touch.");
 
             const beforeMove = canvas.toDataURL();
             document.querySelector('[data-dir="down"]').click();
@@ -151,6 +152,18 @@
           if (!condition) {
             throw new Error(message);
           }
+        }
+
+        function hasCanvasInk(canvas) {
+          const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+
+          for (let index = 0; index < data.length; index += 64) {
+            if (data[index + 3] > 0 && (data[index] > 30 || data[index + 1] > 30 || data[index + 2] > 30)) {
+              return true;
+            }
+          }
+
+          return false;
         }
       })();
     </script>

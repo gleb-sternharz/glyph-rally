@@ -52,7 +52,7 @@ Canvas board size:
 - `src/config.js` `FIELD_SIZES` sets fixed board columns and rows, plus the `auto` sizing bounds.
 - `src/presentation/renderer.js` sets `--arena-preferred-width` at runtime so the reading prompt aligns with the arena.
 - `src/presentation/ui.js` measures viewport room for `auto`, including header and phone D-pad space.
-- On phones, `src/presentation/ui.js` also writes `--visible-viewport-height` and `--visible-viewport-top` from `window.visualViewport` so Android browser chrome does not cover the game header.
+- On phones, `src/presentation/ui.js` also writes `--visible-viewport-height` and a clamped `--phone-top-inset` from `window.visualViewport` so Android browser chrome does not cover the game header.
 
 ## Where To Change Spacing
 

@@ -286,13 +286,16 @@
 
     function syncViewportMetrics() {
       const metrics = getViewportMetrics();
+      const topInset = phoneMode ? clampViewportInset(metrics.top) : 0;
 
       document.documentElement.style.setProperty("--visible-viewport-height", `${metrics.height}px`);
-      document.documentElement.style.setProperty("--visible-viewport-top", `${phoneMode ? metrics.top : 0}px`);
+      document.documentElement.style.setProperty("--phone-top-inset", `${topInset}px`);
     }
 
     function scrollToTop() {
       window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
     }
 
     function measureBoardFit() {
@@ -309,7 +312,7 @@
       const headerHeight = visibleHeight(elements.gameHeader, fallbackHeader);
       const controlsHeight = phoneMode ? visibleHeight(elements.mobileControls, 126) : 0;
       const verticalSpace = phoneMode ? 42 : 104;
-      const topInset = phoneMode ? viewport.top : 0;
+      const topInset = phoneMode ? clampViewportInset(viewport.top) : 0;
       const maxHeight = Math.max(
         phoneMode ? 160 : 260,
         viewport.height - topInset - headerHeight - controlsHeight - verticalSpace,
@@ -442,6 +445,10 @@
       height: viewport?.height || document.documentElement.clientHeight || window.innerHeight || 720,
       top: Math.max(0, viewport?.offsetTop || 0),
     };
+  }
+
+  function clampViewportInset(value) {
+    return Math.min(72, Math.max(0, value || 0));
   }
 
   function isTypingTarget(target) {
