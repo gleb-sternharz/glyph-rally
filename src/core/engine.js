@@ -429,7 +429,7 @@
 
     if (item.effect === "grow") {
       player.score += 1;
-      player.pendingGrow += 2;
+      player.pendingGrow += 1;
       game.tickMs = getNextTickMs(game.speed, game.tickMs);
       events.scoreChanged = true;
     }

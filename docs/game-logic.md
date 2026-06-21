@@ -50,7 +50,7 @@ Classic mode places apples and skulls according to `CLASSIC_ITEM_COUNTS_BY_MODE`
 Apple effect:
 
 - score increases by 1
-- snake grows by 2 cells
+- snake grows by 1 cell
 - automatic speed increases slightly
 
 Skull effect:

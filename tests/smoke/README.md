@@ -13,3 +13,13 @@ chromium --headless --disable-gpu --no-sandbox --window-size=430,900 --user-agen
 ```
 
 The output should contain `mobile layout smoke ok`.
+
+## Engine Growth
+
+Run the growth smoke with Chromium:
+
+```bash
+chromium --headless --disable-gpu --no-sandbox --virtual-time-budget=2000 --dump-dom file:///home/gleb/dev/snake/tests/smoke/engine-growth-smoke.html
+```
+
+The output should contain `engine growth smoke ok`.

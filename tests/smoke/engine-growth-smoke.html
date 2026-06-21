@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Engine growth smoke</title>
+  </head>
+  <body>
+    <pre id="result">running</pre>
+
+    <script src="../../src/config.js"></script>
+    <script src="../../src/core/engine.js"></script>
+    <script>
+      (function () {
+        "use strict";
+
+        const settings = {
+          mode: 1,
+          speed: "manual",
+          fieldSize: "small",
+          theme: "dark",
+          dictionaryId: "english",
+          challenge: "classic",
+          players: [
+            { name: "Tester", color: "#51d88a" },
+          ],
+        };
+        const game = window.SnakeEngine.createGame(settings);
+        const player = game.players[0];
+        const startLength = player.body.length;
+        const head = player.body[0];
+        const dir = window.SnakeConfig.DIRS[player.dir];
+
+        game.items = [{
+          id: "growth-test-apple",
+          itemType: "apple",
+          icon: "assets/icons/apple.svg",
+          word: "APPLE",
+          effect: "grow",
+          score: true,
+          x: head.x + dir.x,
+          y: head.y + dir.y,
+        }];
+
+        const events = window.SnakeEngine.updateGame(game, { playerIndex: 0 });
+        assert(events.goodHit, "Expected grow item to report a good hit.");
+        assert(player.body.length === startLength + 1, "Expected good hit to grow by exactly one cell.");
+
+        game.items = [];
+        window.SnakeEngine.updateGame(game, { playerIndex: 0 });
+        assert(player.body.length === startLength + 1, "Expected no extra queued growth after the next move.");
+
+        document.querySelector("#result").textContent = "engine growth smoke ok";
+
+        function assert(condition, message) {
+          if (!condition) {
+            throw new Error(message);
+          }
+        }
+      })();
+    </script>
+  </body>
+</html>
