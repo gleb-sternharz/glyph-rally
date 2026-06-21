@@ -10,8 +10,9 @@
   padding: 40px;
   border: 1px solid var(--line);
   background:
-    linear-gradient(155deg, rgba(255, 207, 92, 0.13), transparent 45%),
-    linear-gradient(340deg, rgba(255, 111, 97, 0.12), transparent 48%),
+    linear-gradient(155deg, rgba(255, 216, 77, 0.22), transparent 45%),
+    linear-gradient(340deg, rgba(255, 122, 182, 0.18), transparent 48%),
+    linear-gradient(30deg, rgba(98, 230, 255, 0.16), transparent 38%),
     var(--panel);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
@@ -28,8 +29,8 @@
   inset: 40px;
   border-radius: var(--radius);
   background:
-    linear-gradient(90deg, transparent 46%, rgba(244, 240, 232, 0.1) 48%, transparent 50%),
-    linear-gradient(0deg, transparent 46%, rgba(244, 240, 232, 0.1) 48%, transparent 50%);
+    linear-gradient(90deg, transparent 46%, rgba(255, 248, 240, 0.12) 48%, transparent 50%),
+    linear-gradient(0deg, transparent 46%, rgba(255, 248, 240, 0.12) 48%, transparent 50%);
   background-size: 52px 52px;
   mask-image: linear-gradient(180deg, transparent 8%, black 55%, transparent);
   opacity: 0.45;
@@ -39,14 +40,14 @@
   content: "";
   width: 210px;
   height: 210px;
-  border: 24px solid rgba(81, 216, 138, 0.9);
+  border: 24px solid var(--success);
   border-right-color: transparent;
-  border-radius: var(--radius);
+  border-radius: 34px;
   position: absolute;
   right: -40px;
   top: 88px;
   transform: rotate(12deg);
-  filter: drop-shadow(0 12px 0 rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 14px 0 rgba(0, 0, 0, 0.18));
 }
 
 .setup-copy > * {
@@ -125,18 +126,24 @@ fieldset {
   place-items: center;
   color: var(--muted);
   font-weight: 800;
-  transition:
-    border-color 160ms ease,
-    background 160ms ease,
-    color 160ms ease,
-    transform 160ms ease;
 }
 
 .mode-picker input:checked + span,
 .setting-picker input:checked + span {
-  border-color: rgba(255, 207, 92, 0.68);
-  background: rgba(255, 207, 92, 0.16);
+  border-color: color-mix(in srgb, var(--accent) 74%, white 8%);
+  background:
+    linear-gradient(135deg, rgba(255, 216, 77, 0.22), rgba(98, 230, 255, 0.12)),
+    var(--surface);
   color: var(--text);
+  transform: translateY(-1px) scale(1.015);
+  box-shadow: 0 10px 20px rgba(255, 216, 77, 0.12);
+}
+
+.mode-picker label:hover span,
+.setting-picker label:hover span {
+  border-color: color-mix(in srgb, var(--accent-2) 58%, var(--line));
+  color: var(--text);
+  transform: translateY(-2px) scale(1.015);
 }
 
 .settings-grid {
@@ -164,9 +171,17 @@ fieldset {
   padding: 20px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--surface);
+  background:
+    linear-gradient(160deg, rgba(98, 230, 255, 0.08), transparent 48%),
+    var(--surface);
   display: grid;
   gap: 18px;
+}
+
+.player-panel:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent-2) 44%, var(--line));
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12);
 }
 
 .player-panel.is-disabled {
@@ -201,6 +216,12 @@ fieldset {
   border-radius: var(--radius);
   color: var(--text);
   background: var(--surface-strong);
+}
+
+.field input:hover,
+.field select:hover {
+  border-color: color-mix(in srgb, var(--accent-2) 52%, var(--line));
+  transform: translateY(-1px);
 }
 
 .field input[type="text"],
@@ -276,7 +297,7 @@ kbd {
   .setting-picker span,
   .field input,
   .field select {
-    border-radius: 0;
+    border-radius: var(--radius);
   }
 
   .setup-form {
@@ -286,8 +307,8 @@ kbd {
 
   .setup-copy {
     min-height: 240px;
-    border-left: 0;
-    border-right: 0;
+    border-left: 1px solid var(--line);
+    border-right: 1px solid var(--line);
   }
 
   .setup-copy::after {
