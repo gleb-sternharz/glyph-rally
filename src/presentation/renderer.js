@@ -79,25 +79,54 @@
 
     function drawSnake(board, player, palette) {
       const color = player.alive ? player.color : palette.deadSnake;
-      const inset = Math.max(1.5, metrics.cell * 0.13);
+      const overlap = Math.max(0.5, metrics.cell * 0.015);
+      const bodyRadius = metrics.cell * 0.16;
+      const headRadius = metrics.cell * 0.3;
+
+      ctx.fillStyle = color;
+      for (let index = 0; index < player.body.length - 1; index += 1) {
+        drawSnakeConnector(player.body[index], player.body[index + 1], overlap);
+      }
 
       player.body.forEach((segment, index) => {
-        const x = metrics.offsetX + segment.x * metrics.cell + inset;
-        const y = metrics.offsetY + segment.y * metrics.cell + inset;
-        const size = metrics.cell - inset * 2;
-        const alpha = player.alive ? Math.max(0.36, 1 - index * 0.025) : 0.42;
+        const x = metrics.offsetX + segment.x * metrics.cell - overlap;
+        const y = metrics.offsetY + segment.y * metrics.cell - overlap;
+        const size = metrics.cell + overlap * 2;
 
-        ctx.globalAlpha = alpha;
         ctx.fillStyle = color;
-        roundRect(ctx, x, y, size, size, index === 0 ? metrics.cell * 0.29 : metrics.cell * 0.21);
+        roundRect(ctx, x, y, size, size, index === 0 ? headRadius : bodyRadius);
         ctx.fill();
 
         if (index === 0) {
           drawEyes(board, segment, player.dir, player.alive, palette);
         }
       });
+    }
 
-      ctx.globalAlpha = 1;
+    function drawSnakeConnector(from, to, overlap) {
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      if (Math.abs(dx) + Math.abs(dy) !== 1) {
+        return;
+      }
+
+      const minX = Math.min(from.x, to.x);
+      const minY = Math.min(from.y, to.y);
+      if (dx !== 0) {
+        ctx.fillRect(
+          metrics.offsetX + minX * metrics.cell + metrics.cell / 2 - overlap,
+          metrics.offsetY + from.y * metrics.cell - overlap,
+          metrics.cell + overlap * 2,
+          metrics.cell + overlap * 2,
+        );
+      } else {
+        ctx.fillRect(
+          metrics.offsetX + from.x * metrics.cell - overlap,
+          metrics.offsetY + minY * metrics.cell + metrics.cell / 2 - overlap,
+          metrics.cell + overlap * 2,
+          metrics.cell + overlap * 2,
+        );
+      }
     }
 
     function drawEyes(board, head, dirName, alive, palette) {
