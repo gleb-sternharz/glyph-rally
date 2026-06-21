@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Local Snake</title>
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="setup.css">
+    <link rel="stylesheet" href="game.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section id="setupScreen" class="setup-screen" aria-labelledby="setupTitle">
+        <div class="setup-copy">
+          <p class="eyebrow">Local arcade</p>
+          <h1 id="setupTitle">Snake</h1>
+          <p class="lede">Pick your players, colors, and mode. Then settle it on one keyboard.</p>
+        </div>
+
+        <form id="setupForm" class="setup-form">
+          <fieldset class="mode-picker">
+            <legend>Players</legend>
+            <label>
+              <input type="radio" name="mode" value="1">
+              <span>One</span>
+            </label>
+            <label>
+              <input type="radio" name="mode" value="2" checked>
+              <span>Two</span>
+            </label>
+          </fieldset>
+
+          <div class="player-grid">
+            <section class="player-panel" aria-labelledby="playerOneTitle">
+              <div class="player-heading">
+                <span class="player-mark" data-player="0"></span>
+                <h2 id="playerOneTitle">Player 1</h2>
+              </div>
+
+              <label class="field">
+                <span>Name</span>
+                <input id="playerOneName" name="playerOneName" type="text" maxlength="16" autocomplete="off" value="Lime">
+              </label>
+
+              <label class="field">
+                <span>Color</span>
+                <input id="playerOneColor" name="playerOneColor" type="color" value="#51d88a">
+              </label>
+
+              <div class="key-row" aria-label="Player 1 controls">
+                <kbd>W</kbd>
+                <kbd>A</kbd>
+                <kbd>S</kbd>
+                <kbd>D</kbd>
+              </div>
+            </section>
+
+            <section class="player-panel" id="playerTwoPanel" aria-labelledby="playerTwoTitle">
+              <div class="player-heading">
+                <span class="player-mark" data-player="1"></span>
+                <h2 id="playerTwoTitle">Player 2</h2>
+              </div>
+
+              <label class="field">
+                <span>Name</span>
+                <input id="playerTwoName" name="playerTwoName" type="text" maxlength="16" autocomplete="off" value="Berry">
+              </label>
+
+              <label class="field">
+                <span>Color</span>
+                <input id="playerTwoColor" name="playerTwoColor" type="color" value="#5aa7ff">
+              </label>
+
+              <div class="key-row arrow-keys" aria-label="Player 2 controls">
+                <kbd>&uarr;</kbd>
+                <kbd>&larr;</kbd>
+                <kbd>&darr;</kbd>
+                <kbd>&rarr;</kbd>
+              </div>
+            </section>
+          </div>
+
+          <div class="settings-grid">
+            <fieldset class="setting-picker setting-picker--three">
+              <legend>Speed</legend>
+              <label>
+                <input type="radio" name="speed" value="manual">
+                <span>No auto</span>
+              </label>
+              <label>
+                <input type="radio" name="speed" value="slow">
+                <span>Slow</span>
+              </label>
+              <label>
+                <input type="radio" name="speed" value="fast" checked>
+                <span>Fast</span>
+              </label>
+            </fieldset>
+
+            <fieldset class="setting-picker setting-picker--three">
+              <legend>Field size</legend>
+              <label>
+                <input type="radio" name="fieldSize" value="small">
+                <span>Small</span>
+              </label>
+              <label>
+                <input type="radio" name="fieldSize" value="medium" checked>
+                <span>Medium</span>
+              </label>
+              <label>
+                <input type="radio" name="fieldSize" value="large">
+                <span>Large</span>
+              </label>
+            </fieldset>
+
+            <fieldset class="setting-picker setting-picker--two">
+              <legend>Theme</legend>
+              <label>
+                <input type="radio" name="theme" value="dark" checked>
+                <span>Dark</span>
+              </label>
+              <label>
+                <input type="radio" name="theme" value="light">
+                <span>Light</span>
+              </label>
+            </fieldset>
+          </div>
+
+          <button class="primary-button" type="submit">Start game</button>
+        </form>
+      </section>
+
+      <section id="gameScreen" class="game-screen is-hidden" aria-labelledby="gameTitle">
+        <header class="game-header">
+          <div>
+            <p class="eyebrow">Match</p>
+            <h1 id="gameTitle">Snake</h1>
+          </div>
+
+          <div class="toolbar" aria-label="Game controls">
+            <button id="pauseButton" class="icon-button" type="button" aria-label="Pause">
+              <span aria-hidden="true">||</span>
+            </button>
+            <button id="restartButton" class="icon-button" type="button" aria-label="Restart">
+              <span aria-hidden="true">&#8635;</span>
+            </button>
+            <button id="setupButton" class="icon-button" type="button" aria-label="Setup">
+              <span aria-hidden="true">&#9881;</span>
+            </button>
+          </div>
+        </header>
+
+        <div class="scoreboard" id="scoreboard" aria-live="polite"></div>
+
+        <div class="arena-wrap">
+          <canvas id="gameCanvas" width="960" height="672"></canvas>
+          <div id="overlay" class="overlay is-hidden" role="status" aria-live="assertive">
+            <p id="overlayKicker" class="eyebrow">Paused</p>
+            <h2 id="overlayTitle">Game paused</h2>
+            <p id="overlayText">Press resume when you are ready.</p>
+            <button id="overlayButton" class="primary-button" type="button">Resume</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="config.js"></script>
+    <script src="storage.js"></script>
+    <script src="engine.js"></script>
+    <script src="renderer.js"></script>
+    <script src="ui.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

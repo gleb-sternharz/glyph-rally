@@ -1,0 +1,195 @@
+(function (window) {
+  "use strict";
+
+  const { KEY_MAP } = window.SnakeConfig;
+  const engine = window.SnakeEngine;
+  const storage = window.SnakeStorage;
+  const ui = window.SnakeUI.createUi();
+  const renderer = window.SnakeRenderer.createRenderer(ui.elements.canvas);
+
+  const runtime = {
+    running: false,
+    paused: false,
+    over: false,
+    lastTime: 0,
+    accumulator: 0,
+    animationId: 0,
+  };
+  let game = null;
+
+  function startGame(settings) {
+    stopLoop();
+    storage.savePrefs(settings);
+    ui.applyTheme(settings.theme);
+
+    game = engine.createGame(settings);
+    renderer.resize(game.board);
+    resetRuntime();
+    ui.resetPauseButton();
+    ui.showGameScreen();
+    ui.hideOverlay();
+    ui.renderScoreboard(game.players);
+    draw();
+
+    runtime.animationId = requestAnimationFrame(loop);
+  }
+
+  function stopLoop() {
+    runtime.running = false;
+    cancelAnimationFrame(runtime.animationId);
+  }
+
+  function resetRuntime() {
+    runtime.running = true;
+    runtime.paused = false;
+    runtime.over = false;
+    runtime.lastTime = 0;
+    runtime.accumulator = 0;
+  }
+
+  function loop(timestamp) {
+    if (!runtime.running || !game) {
+      return;
+    }
+
+    if (!runtime.lastTime) {
+      runtime.lastTime = timestamp;
+    }
+
+    const delta = timestamp - runtime.lastTime;
+    runtime.lastTime = timestamp;
+
+    if (engine.isAutoSpeed(game) && !runtime.paused && !runtime.over) {
+      runtime.accumulator += delta;
+      while (runtime.accumulator >= game.tickMs) {
+        stepGame();
+        runtime.accumulator -= game.tickMs;
+      }
+    }
+
+    draw();
+    runtime.animationId = requestAnimationFrame(loop);
+  }
+
+  function stepGame() {
+    if (!game || runtime.over) {
+      return;
+    }
+
+    const events = engine.updateGame(game);
+    if (events.foodEaten) {
+      ui.renderScoreboard(game.players);
+    }
+    if (events.gameOver) {
+      finishGame();
+    }
+  }
+
+  function finishGame() {
+    runtime.over = true;
+    runtime.paused = false;
+    ui.setPauseButtonPaused(false);
+    ui.renderScoreboard(game.players);
+
+    const message = ui.formatGameResult(engine.getResult(game));
+    ui.showOverlay({
+      ...message,
+      buttonLabel: "Play again",
+      onClick: () => startGame(ui.readSettings()),
+    });
+  }
+
+  function draw() {
+    if (game) {
+      renderer.draw(game, ui.getPalette());
+    }
+  }
+
+  function togglePause() {
+    if (!runtime.running || runtime.over) {
+      return;
+    }
+
+    runtime.paused = !runtime.paused;
+    ui.setPauseButtonPaused(runtime.paused);
+
+    if (runtime.paused) {
+      ui.showOverlay({
+        kicker: "Paused",
+        title: "Game paused",
+        text: "Press resume when you are ready.",
+        buttonLabel: "Resume",
+        onClick: togglePause,
+      });
+    } else {
+      ui.hideOverlay();
+    }
+  }
+
+  function advanceManualStep() {
+    if (!game || game.speed !== "manual" || runtime.paused || runtime.over) {
+      return;
+    }
+
+    stepGame();
+    draw();
+  }
+
+  function syncSetupPreview() {
+    ui.updateSetupState();
+    const board = engine.createBoard(ui.readSettings().fieldSize);
+    renderer.resize(board);
+    renderer.drawBoard(board, ui.getPalette());
+  }
+
+  ui.elements.setupForm.addEventListener("input", syncSetupPreview);
+  ui.elements.setupForm.addEventListener("change", syncSetupPreview);
+  ui.elements.setupForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    startGame(ui.readSettings());
+  });
+
+  ui.elements.pauseButton.addEventListener("click", togglePause);
+  ui.elements.restartButton.addEventListener("click", () => startGame(ui.readSettings()));
+  ui.elements.setupButton.addEventListener("click", () => {
+    stopLoop();
+    game = null;
+    ui.showSetupScreen();
+    ui.hideOverlay();
+    syncSetupPreview();
+  });
+
+  window.addEventListener("keydown", (event) => {
+    if (window.SnakeUI.isTypingTarget(event.target) || !runtime.running || !game) {
+      return;
+    }
+
+    if (event.code === "Space") {
+      event.preventDefault();
+      togglePause();
+      return;
+    }
+
+    if (event.code === "Enter" && runtime.over) {
+      event.preventDefault();
+      startGame(ui.readSettings());
+      return;
+    }
+
+    const binding = KEY_MAP[event.code];
+    if (!binding) {
+      return;
+    }
+
+    event.preventDefault();
+    if (binding.player < game.mode) {
+      const accepted = engine.setDirection(game, binding.player, binding.dir);
+      if (accepted) {
+        advanceManualStep();
+      }
+    }
+  });
+
+  ui.applyPrefs(storage.loadPrefs());
+  syncSetupPreview();
+})(window);
