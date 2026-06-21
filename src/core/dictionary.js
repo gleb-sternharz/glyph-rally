@@ -134,7 +134,7 @@
   }
 
   function iconBox(item, metrics) {
-    const padding = metrics.cell * 0.08;
+    const padding = Math.max(0.25, metrics.cell * 0.02);
 
     return {
       x: metrics.offsetX + item.x * metrics.cell + padding,
@@ -147,7 +147,7 @@
     const { palette, roundRect } = tools;
 
     ctx.fillStyle = palette.food;
-    roundRect(ctx, box.x + box.size * 0.18, box.y + box.size * 0.18, box.size * 0.64, box.size * 0.64, box.size * 0.16);
+    roundRect(ctx, box.x + box.size * 0.1, box.y + box.size * 0.1, box.size * 0.8, box.size * 0.8, box.size * 0.2);
     ctx.fill();
 
     ctx.fillStyle = palette.foodHighlight;

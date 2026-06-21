@@ -43,21 +43,16 @@
       ctx.fillStyle = palette.canvasBg;
       ctx.fillRect(0, 0, metrics.width, metrics.height);
 
-      ctx.strokeStyle = palette.canvasGrid;
-      ctx.lineWidth = 1;
-      for (let x = 0; x <= board.cols; x += 1) {
-        const lineX = metrics.offsetX + x * metrics.cell;
-        ctx.beginPath();
-        ctx.moveTo(lineX + 0.5, metrics.offsetY);
-        ctx.lineTo(lineX + 0.5, metrics.offsetY + board.rows * metrics.cell);
-        ctx.stroke();
-      }
-      for (let y = 0; y <= board.rows; y += 1) {
-        const lineY = metrics.offsetY + y * metrics.cell;
-        ctx.beginPath();
-        ctx.moveTo(metrics.offsetX, lineY + 0.5);
-        ctx.lineTo(metrics.offsetX + board.cols * metrics.cell, lineY + 0.5);
-        ctx.stroke();
+      ctx.fillStyle = palette.canvasChecker;
+      for (let y = 0; y < board.rows; y += 1) {
+        for (let x = (y % 2); x < board.cols; x += 2) {
+          ctx.fillRect(
+            metrics.offsetX + x * metrics.cell,
+            metrics.offsetY + y * metrics.cell,
+            metrics.cell,
+            metrics.cell,
+          );
+        }
       }
 
       ctx.strokeStyle = palette.canvasBorder;

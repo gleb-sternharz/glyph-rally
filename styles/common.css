@@ -18,7 +18,7 @@
   --key-border: rgba(255, 248, 240, 0.18);
   --key-border-strong: rgba(98, 230, 255, 0.42);
   --canvas-bg: #0d1020;
-  --canvas-grid: rgba(255, 248, 240, 0.16);
+  --canvas-checker: rgba(98, 230, 255, 0.04);
   --canvas-border: rgba(98, 230, 255, 0.48);
   --overlay-bg: rgba(12, 10, 28, 0.78);
   --dead-snake: #8580a1;
@@ -64,7 +64,7 @@
   --key-border: rgba(36, 27, 52, 0.16);
   --key-border-strong: rgba(17, 184, 218, 0.4);
   --canvas-bg: #fff9df;
-  --canvas-grid: rgba(70, 53, 92, 0.22);
+  --canvas-checker: rgba(244, 91, 154, 0.06);
   --canvas-border: rgba(244, 91, 154, 0.42);
   --overlay-bg: rgba(255, 247, 215, 0.82);
   --dead-snake: #a39ab0;

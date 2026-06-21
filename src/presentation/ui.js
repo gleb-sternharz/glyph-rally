@@ -260,7 +260,7 @@
       const rootStyle = getComputedStyle(document.documentElement);
       return {
         canvasBg: cssVar(rootStyle, "--canvas-bg"),
-        canvasGrid: cssVar(rootStyle, "--canvas-grid"),
+        canvasChecker: cssVar(rootStyle, "--canvas-checker"),
         canvasBorder: cssVar(rootStyle, "--canvas-border"),
         deadSnake: cssVar(rootStyle, "--dead-snake"),
         eye: cssVar(rootStyle, "--eye"),

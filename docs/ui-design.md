@@ -30,6 +30,8 @@ Most high-level knobs are defined in `styles/common.css` under `:root`:
 
 Theme color tokens are also in `styles/common.css`. The dark theme is `:root`; the light theme overrides values in `:root[data-theme="light"]`.
 
+The board checker tint is controlled by `--canvas-checker` in `styles/common.css`.
+
 ## Where To Change Layout
 
 Setup screen layout:
