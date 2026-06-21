@@ -129,12 +129,14 @@
         "use strict";
 
         setTimeout(() => {
+          report("checking setup");
           assert(document.querySelectorAll(".color-swatch").length === 12, "Expected generated color swatches.");
           document.querySelector("#setupScreen").style.paddingBottom = "720px";
           window.scrollTo(0, document.body.scrollHeight);
           document.querySelector("#setupForm").requestSubmit();
 
           setTimeout(() => {
+            report("checking game");
             assert(document.documentElement.classList.contains("is-phone-mode"), "Expected phone mode.");
             assert(!document.querySelector("#gameScreen").classList.contains("is-hidden"), "Expected game screen.");
             assert(window.scrollY < 2, "Expected game start to reset page scroll.");
@@ -149,14 +151,15 @@
             document.querySelector('[data-dir="down"]').click();
 
             setTimeout(() => {
+              report("checking controls");
               assert(canvas.toDataURL() !== beforeMove, "Expected D-pad to move manual snake.");
-              window.history.back();
-
-              setTimeout(() => {
+              waitForHistoryReturn(() => {
+                report("checking back");
                 assert(!document.querySelector("#setupScreen").classList.contains("is-hidden"), "Expected browser back to show setup.");
                 assert(document.querySelector("#gameScreen").classList.contains("is-hidden"), "Expected browser back to hide game.");
                 document.querySelector("#result").textContent = "mobile layout smoke ok";
-              }, 100);
+              });
+              window.history.back();
             }, 100);
           }, 100);
         }, 100);
@@ -165,6 +168,10 @@
           if (!condition) {
             throw new Error(message);
           }
+        }
+
+        function report(message) {
+          document.querySelector("#result").textContent = message;
         }
 
         function hasCanvasInk(canvas) {
@@ -177,6 +184,37 @@
           }
 
           return false;
+        }
+
+        function waitForHistoryReturn(callback) {
+          let done = false;
+          const setupScreen = document.querySelector("#setupScreen");
+          const gameScreen = document.querySelector("#gameScreen");
+          const observer = new MutationObserver(finish);
+          const timeout = setTimeout(() => {
+            report("waiting for back");
+          }, 1000);
+
+          observer.observe(setupScreen, { attributes: true, attributeFilter: ["class"] });
+          observer.observe(gameScreen, { attributes: true, attributeFilter: ["class"] });
+          window.addEventListener("hashchange", finish);
+          window.addEventListener("popstate", finish);
+          finish();
+
+          function finish() {
+            const isSetupVisible = !setupScreen.classList.contains("is-hidden");
+            const isGameHidden = gameScreen.classList.contains("is-hidden");
+            if (done || !isSetupVisible || !isGameHidden) {
+              return;
+            }
+
+            done = true;
+            clearTimeout(timeout);
+            observer.disconnect();
+            window.removeEventListener("hashchange", finish);
+            window.removeEventListener("popstate", finish);
+            callback();
+          }
         }
       })();
     </script>

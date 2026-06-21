@@ -12,6 +12,7 @@
   const narrowQuery = window.matchMedia?.("(max-width: 700px)");
   const SCREEN_SETUP = "setup";
   const SCREEN_GAME = "game";
+  const GAME_HASH = "#game";
 
   const runtime = {
     running: false,
@@ -23,6 +24,7 @@
   };
   let game = null;
   let resizeFrame = 0;
+  let historyFrame = 0;
   let swipeStart = null;
   let currentScreen = SCREEN_SETUP;
 
@@ -259,7 +261,7 @@
       window.history.pushState(
         { ...getHistoryState(), snakeScreen: SCREEN_GAME },
         document.title,
-        window.location.href
+        getScreenUrl(SCREEN_GAME)
       );
     }
     currentScreen = SCREEN_GAME;
@@ -274,8 +276,19 @@
     window.history.replaceState(
       { ...getHistoryState(), snakeScreen: screen },
       document.title,
-      window.location.href
+      getScreenUrl(screen)
     );
+  }
+
+  function getScreenUrl(screen) {
+    const url = new URL(window.location.href);
+    if (screen === SCREEN_GAME) {
+      url.hash = GAME_HASH;
+    } else if (url.hash === GAME_HASH) {
+      url.hash = "";
+    }
+
+    return url.toString();
   }
 
   function getHistoryState() {
@@ -283,14 +296,27 @@
     return state && typeof state === "object" ? state : {};
   }
 
-  function handlePopState(event) {
-    const screen = event.state?.snakeScreen === SCREEN_GAME ? SCREEN_GAME : SCREEN_SETUP;
+  function scheduleHistorySync() {
+    cancelAnimationFrame(historyFrame);
+    historyFrame = requestAnimationFrame(syncHistoryScreen);
+  }
+
+  function syncHistoryScreen() {
+    const screen = getActiveHistoryScreen();
     if (screen === SCREEN_GAME) {
-      startGame(ui.readSettings(), { skipHistory: true });
+      if (!game || currentScreen !== SCREEN_GAME) {
+        startGame(ui.readSettings(), { skipHistory: true });
+      }
       return;
     }
 
-    showSetup({ updateHistory: false });
+    if (game || currentScreen !== SCREEN_SETUP) {
+      showSetup({ updateHistory: false });
+    }
+  }
+
+  function getActiveHistoryScreen() {
+    return window.location.hash === GAME_HASH ? SCREEN_GAME : SCREEN_SETUP;
   }
 
   ui.elements.setupForm.addEventListener("input", syncSetupPreview);
@@ -394,7 +420,8 @@
 
   window.addEventListener("resize", scheduleViewportSync);
   window.addEventListener("orientationchange", scheduleViewportSync);
-  window.addEventListener("popstate", handlePopState);
+  window.addEventListener("hashchange", scheduleHistorySync);
+  window.addEventListener("popstate", scheduleHistorySync);
   if (window.visualViewport?.addEventListener) {
     window.visualViewport.addEventListener("resize", scheduleViewportSync);
     window.visualViewport.addEventListener("scroll", scheduleViewportSync);
