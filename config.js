@@ -72,7 +72,13 @@
     2: 6,
   };
 
-  const READING_DICTIONARY = window.SnakeDictionary?.entries ?? [];
+  const DEFAULT_DICTIONARY_ID = "english";
+
+  const DICTIONARIES = [
+    { id: "english", label: "English", path: "dictionaries/english.json" },
+    { id: "german", label: "Deutsch", path: "dictionaries/german.json" },
+    { id: "russian", label: "Русский", path: "dictionaries/russian.json" },
+  ];
 
   window.SnakeConfig = {
     CELL_SIZE,
@@ -82,8 +88,9 @@
     KEY_MAP,
     DEFAULT_PLAYERS,
     CLASSIC_ITEM_COUNTS_BY_MODE,
+    DEFAULT_DICTIONARY_ID,
+    DICTIONARIES,
     GAME_TYPES,
-    READING_DICTIONARY,
     READING_SYMBOL_COUNT_BY_MODE,
     STORAGE_KEY: "localSnakePrefs",
   };

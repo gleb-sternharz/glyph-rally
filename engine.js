@@ -4,10 +4,11 @@
   const {
     CELL_SIZE,
     CLASSIC_ITEM_COUNTS_BY_MODE,
+    DEFAULT_DICTIONARY_ID,
+    DICTIONARIES,
     DIRS,
     FIELD_SIZES,
     GAME_TYPES,
-    READING_DICTIONARY,
     READING_SYMBOL_COUNT_BY_MODE,
     SPEEDS,
   } = window.SnakeConfig;
@@ -15,14 +16,16 @@
   const CLASSIC_ITEMS = {
     apple: {
       id: "classic-apple",
-      icon: "apple",
+      itemType: "apple",
+      icon: "icons/apple.svg",
       word: "APPLE",
       effect: "grow",
       score: true,
     },
     skull: {
       id: "classic-skull",
-      icon: "skull",
+      itemType: "skull",
+      icon: "icons/skull.svg",
       word: "SKULL",
       effect: "shrink",
       score: false,
@@ -44,6 +47,7 @@
       speed: settings.speed,
       fieldSize: settings.fieldSize,
       theme: settings.theme,
+      dictionaryId: normalizeDictionaryId(settings.dictionaryId),
       challenge: GAME_TYPES[settings.challenge] ? settings.challenge : GAME_TYPES.classic,
       board: createBoard(settings.fieldSize),
       players: [],
@@ -285,7 +289,7 @@
   }
 
   function startReadingRound(game) {
-    const entries = READING_DICTIONARY;
+    const entries = window.SnakeDictionary.getEntries(game.dictionaryId);
     const itemCount = Math.min(
       entries.length,
       READING_SYMBOL_COUNT_BY_MODE[game.mode] ?? READING_SYMBOL_COUNT_BY_MODE[1],
@@ -298,19 +302,19 @@
       return false;
     }
 
-    const distractors = shuffle(entries.filter((entry) => entry.id !== game.targetEntry.id));
+    const distractors = shuffle(entries.filter((entry) => entry.matchKey !== game.targetEntry.matchKey));
     const roundEntries = shuffle([game.targetEntry, ...distractors.slice(0, itemCount - 1)]);
     let placedAll = true;
 
     for (const entry of roundEntries) {
       placedAll = placeItem(game, {
-        id: `reading-${entry.id}`,
+        id: `reading-${entry.matchKey}`,
         kind: "reading",
         icon: entry.icon,
         word: entry.word,
-        entryId: entry.id,
-        effect: entry.id === game.targetEntry.id ? "grow" : "shrink",
-        score: entry.id === game.targetEntry.id,
+        matchKey: entry.matchKey,
+        effect: entry.matchKey === game.targetEntry.matchKey ? "grow" : "shrink",
+        score: entry.matchKey === game.targetEntry.matchKey,
       }) && placedAll;
     }
 
@@ -372,7 +376,7 @@
       events.boardFilled = !startReadingRound(game);
       events.targetChanged = true;
     } else {
-      events.boardFilled = !placeItem(game, createClassicItem(item.icon));
+      events.boardFilled = !placeItem(game, createClassicItem(item.itemType));
     }
 
     return item.effect;
@@ -446,6 +450,12 @@
     }
 
     return copy;
+  }
+
+  function normalizeDictionaryId(dictionaryId) {
+    return DICTIONARIES.some((dictionary) => dictionary.id === dictionaryId)
+      ? dictionaryId
+      : DEFAULT_DICTIONARY_ID;
   }
 
   window.SnakeEngine = {

@@ -1,7 +1,14 @@
 (function (window) {
   "use strict";
 
-  const { DEFAULT_PLAYERS, FIELD_SIZES, GAME_TYPES, SPEEDS } = window.SnakeConfig;
+  const {
+    DEFAULT_DICTIONARY_ID,
+    DEFAULT_PLAYERS,
+    DICTIONARIES,
+    FIELD_SIZES,
+    GAME_TYPES,
+    SPEEDS,
+  } = window.SnakeConfig;
 
   function createUi() {
     const elements = {
@@ -21,8 +28,10 @@
       overlayButton: document.querySelector("#overlayButton"),
       readingPrompt: document.querySelector("#readingPrompt"),
       targetWord: document.querySelector("#targetWord"),
+      dictionaryField: document.querySelector("#dictionaryField"),
     };
     const playerMarks = elements.setupScreen.querySelectorAll(".player-mark");
+    populateDictionarySelect();
 
     function applyPrefs(prefs) {
       if (!prefs) {
@@ -44,6 +53,9 @@
       if (prefs.theme) {
         elements.setupForm.elements.theme.value = prefs.theme;
       }
+      if (prefs.dictionaryId && isDictionaryId(prefs.dictionaryId)) {
+        elements.setupForm.elements.dictionaryId.value = prefs.dictionaryId;
+      }
 
       prefs.players?.forEach((player, index) => {
         const nameInput = elements.setupForm.elements[index === 0 ? "playerOneName" : "playerTwoName"];
@@ -61,11 +73,14 @@
       const mode = Number(elements.setupForm.elements.mode.value);
       const p1Color = elements.setupForm.elements.playerOneColor.value;
       const p2Color = elements.setupForm.elements.playerTwoColor.value;
+      const readingMode = elements.setupForm.elements.challenge.value === GAME_TYPES.reading;
 
       applyTheme(elements.setupForm.elements.theme.value);
       elements.playerTwoPanel.classList.toggle("is-disabled", mode === 1);
       elements.setupForm.elements.playerTwoName.disabled = mode === 1;
       elements.setupForm.elements.playerTwoColor.disabled = mode === 1;
+      elements.setupForm.elements.dictionaryId.disabled = !readingMode;
+      elements.dictionaryField.classList.toggle("is-disabled", !readingMode);
       playerMarks[0].style.setProperty("--snake-color", p1Color);
       playerMarks[1].style.setProperty("--snake-color", p2Color);
     }
@@ -90,10 +105,14 @@
         ? elements.setupForm.elements.fieldSize.value
         : "medium";
       const theme = elements.setupForm.elements.theme.value === "light" ? "light" : "dark";
+      const dictionaryId = isDictionaryId(elements.setupForm.elements.dictionaryId.value)
+        ? elements.setupForm.elements.dictionaryId.value
+        : DEFAULT_DICTIONARY_ID;
 
       return {
         mode,
         challenge,
+        dictionaryId,
         speed,
         fieldSize,
         theme,
@@ -248,11 +267,33 @@
       showSetupScreen,
       updateSetupState,
     };
+
+    function populateDictionarySelect() {
+      const select = elements.setupForm.elements.dictionaryId;
+      const options = window.SnakeDictionary?.getOptions?.() ?? DICTIONARIES;
+
+      select.innerHTML = "";
+      for (const option of options) {
+        const entry = document.createElement("option");
+        entry.value = option.id;
+        entry.textContent = option.label;
+        entry.disabled = option.available === false;
+        select.append(entry);
+      }
+
+      select.value = isDictionaryId(DEFAULT_DICTIONARY_ID)
+        ? DEFAULT_DICTIONARY_ID
+        : select.options[0]?.value ?? "";
+    }
   }
 
   function sanitizeName(value, fallback) {
     const trimmed = value.trim().replace(/\s+/g, " ");
     return trimmed || fallback;
+  }
+
+  function isDictionaryId(id) {
+    return DICTIONARIES.some((dictionary) => dictionary.id === id);
   }
 
   function cssVar(rootStyle, name) {

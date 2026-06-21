@@ -1,7 +1,7 @@
 (function (window) {
   "use strict";
 
-  const { FIELD_SIZES, GAME_TYPES, SPEEDS, STORAGE_KEY } = window.SnakeConfig;
+  const { DICTIONARIES, FIELD_SIZES, GAME_TYPES, SPEEDS, STORAGE_KEY } = window.SnakeConfig;
 
   function loadPrefs() {
     try {
@@ -28,6 +28,7 @@
         JSON.stringify({
           mode: settings.mode,
           challenge: settings.challenge,
+          dictionaryId: settings.dictionaryId,
           speed: settings.speed,
           fieldSize: settings.fieldSize,
           theme: settings.theme,
@@ -50,6 +51,9 @@
     }
     if (prefs.challenge && GAME_TYPES[prefs.challenge]) {
       normalized.challenge = prefs.challenge;
+    }
+    if (prefs.dictionaryId && isDictionaryId(prefs.dictionaryId)) {
+      normalized.dictionaryId = prefs.dictionaryId;
     }
     if (prefs.speed && SPEEDS[prefs.speed]) {
       normalized.speed = prefs.speed;
@@ -81,6 +85,10 @@
     }
 
     return normalized;
+  }
+
+  function isDictionaryId(id) {
+    return DICTIONARIES.some((dictionary) => dictionary.id === id);
   }
 
   window.SnakeStorage = {

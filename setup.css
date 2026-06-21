@@ -13,7 +13,7 @@
     linear-gradient(155deg, rgba(255, 207, 92, 0.13), transparent 45%),
     linear-gradient(340deg, rgba(255, 111, 97, 0.12), transparent 48%),
     var(--panel);
-  border-radius: 8px;
+  border-radius: var(--radius);
   box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
@@ -26,7 +26,7 @@
   content: "";
   position: absolute;
   inset: 40px;
-  border-radius: 8px;
+  border-radius: var(--radius);
   background:
     linear-gradient(90deg, transparent 46%, rgba(244, 240, 232, 0.1) 48%, transparent 50%),
     linear-gradient(0deg, transparent 46%, rgba(244, 240, 232, 0.1) 48%, transparent 50%);
@@ -41,7 +41,7 @@
   height: 210px;
   border: 24px solid rgba(81, 216, 138, 0.9);
   border-right-color: transparent;
-  border-radius: 8px;
+  border-radius: var(--radius);
   position: absolute;
   right: -40px;
   top: 88px;
@@ -115,7 +115,7 @@ fieldset {
 .setting-picker span {
   min-height: 48px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
   display: grid;
   place-items: center;
@@ -145,6 +145,10 @@ fieldset {
   grid-column: 1 / -1;
 }
 
+.setting-field {
+  min-width: 0;
+}
+
 .player-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -155,7 +159,7 @@ fieldset {
   min-width: 0;
   padding: 20px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
   display: grid;
   gap: 18px;
@@ -179,22 +183,29 @@ fieldset {
   font-weight: 700;
 }
 
-.field input {
+.field input,
+.field select {
   width: 100%;
   min-width: 0;
-  height: 48px;
+  height: var(--control-height);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   color: var(--text);
   background: var(--surface-strong);
 }
 
-.field input[type="text"] {
+.field input[type="text"],
+.field select {
   padding: 0 14px;
 }
 
 .field input[type="color"] {
   padding: 5px;
+}
+
+.field select:disabled,
+.field.is-disabled {
+  opacity: 0.48;
 }
 
 .key-row {
@@ -208,7 +219,7 @@ kbd {
   height: 34px;
   border: 1px solid var(--key-border);
   border-bottom-color: var(--key-border-strong);
-  border-radius: 7px;
+  border-radius: var(--radius-small);
   background: var(--key-bg);
   color: var(--muted);
   display: grid;
@@ -254,7 +265,8 @@ kbd {
   .player-panel,
   .mode-picker span,
   .setting-picker span,
-  .field input {
+  .field input,
+  .field select {
     border-radius: 0;
   }
 

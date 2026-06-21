@@ -12,7 +12,7 @@
 
 .game-header h1 {
   margin: 0;
-  font-size: clamp(2.2rem, 7vw, 4.8rem);
+  font-size: var(--game-title-size);
 }
 
 .toolbar {
@@ -21,10 +21,10 @@
 }
 
 .icon-button {
-  width: 46px;
-  height: 46px;
+  width: var(--icon-button-size);
+  height: var(--icon-button-size);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   color: var(--text);
   background: var(--surface);
   display: grid;
@@ -42,7 +42,7 @@
 .score-card {
   min-width: 0;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
   padding: 14px 16px;
   display: flex;
@@ -76,7 +76,7 @@
   width: min(100%, var(--arena-preferred-width, 720px));
   justify-self: center;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
   padding: 12px 16px;
   display: flex;
@@ -94,7 +94,7 @@
 
 .reading-prompt strong {
   color: var(--accent);
-  font-size: clamp(1.6rem, 5vw, 2.8rem);
+  font-size: var(--target-word-size);
   line-height: 1;
   letter-spacing: 0;
 }
@@ -104,7 +104,7 @@
   justify-self: center;
   aspect-ratio: 10 / 7;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--canvas-bg);
   box-shadow: var(--shadow);
   overflow: hidden;
