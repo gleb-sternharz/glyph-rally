@@ -10,13 +10,14 @@ This is a standalone browser game. It has no build step, no external packages, a
 2. `boot.js` loads `dictionaries/*.js` from `SnakeConfig.DICTIONARIES`.
 3. `dictionary.js` normalizes dictionary data and loads SVG icon images.
 4. `storage.js` reads and writes local preferences.
-5. `engine.js` owns game state and game rules.
-6. `renderer.js` draws the board, items, and snakes on the canvas.
-7. `ui.js` owns DOM reads, DOM writes, theme state, and screen state.
-8. `sound.js` owns the Web Audio sound effects.
-9. `app.js` wires input, animation, rendering, sound, and game lifecycle.
+5. `url-state.js` reads and writes shareable URL settings.
+6. `engine.js` owns game state and game rules.
+7. `renderer.js` draws the board, items, and snakes on the canvas.
+8. `ui.js` owns DOM reads, DOM writes, theme state, and screen state.
+9. `sound.js` owns the Web Audio sound effects.
+10. `app.js` wires input, animation, rendering, sound, and game lifecycle.
 
-The files attach their APIs to `window.SnakeConfig`, `window.SnakeDictionary`, `window.SnakeStorage`, `window.SnakeEngine`, `window.SnakeRenderer`, `window.SnakeUI`, and `window.SnakeSound`.
+The files attach their APIs to `window.SnakeConfig`, `window.SnakeDictionary`, `window.SnakeStorage`, `window.SnakeUrlState`, `window.SnakeEngine`, `window.SnakeRenderer`, `window.SnakeUI`, and `window.SnakeSound`.
 
 ## Main Boundaries
 
@@ -31,6 +32,8 @@ The files attach their APIs to `window.SnakeConfig`, `window.SnakeDictionary`, `
 `app.js` is the coordinator. It starts games, runs the animation loop, handles keyboard and button events, and asks the engine, UI, renderer, and storage modules to do their jobs.
 
 `dictionary.js` is a small asset/data runtime. It parses configured dictionary data, normalizes words to uppercase, creates internal `matchKey` values from icon paths, and draws SVG icons on the canvas.
+
+`url-state.js` is the share-link layer. It translates setup settings to and from query parameters. URL settings override local preferences during startup, and `app.js` keeps the current setup reflected in the address bar.
 
 ## Dictionary Loading
 

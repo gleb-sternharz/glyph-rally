@@ -59,3 +59,24 @@ Classic mode also uses SVGs:
 - player names and colors
 
 The storage key is `localSnakePrefs`, configured in `config.js`.
+
+## Shareable URLs
+
+`url-state.js` keeps the address bar synchronized with the setup form. A copied URL can restore a specific game setup on another browser:
+
+```text
+index.html?mode=2&challenge=reading&dictionary=greek&speed=slow&field=large&theme=light&p1=Alex&c1=51d88a&p2=Mira&c2=5aa7ff
+```
+
+Supported query parameters:
+
+- `mode`: `1` or `2`
+- `challenge`: `classic` or `reading`
+- `dictionary`: any configured dictionary id
+- `speed`: any key from `SPEEDS`
+- `field`: any key from `FIELD_SIZES`
+- `theme`: `dark` or `light`
+- `p1`, `p2`: player names
+- `c1`, `c2`: player colors as six-digit hex values, without `#`
+
+On startup, URL settings are applied after localStorage preferences, so a shared link wins over saved local choices.

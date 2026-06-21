@@ -4,6 +4,7 @@
   const { KEY_MAP } = window.SnakeConfig;
   const engine = window.SnakeEngine;
   const storage = window.SnakeStorage;
+  const urlState = window.SnakeUrlState;
   const ui = window.SnakeUI.createUi();
   const sound = window.SnakeSound.createSound();
   const renderer = window.SnakeRenderer.createRenderer(ui.elements.canvas);
@@ -22,6 +23,7 @@
     sound.unlock();
     stopLoop();
     storage.savePrefs(settings);
+    urlState.writeSettings(settings);
     ui.applyTheme(settings.theme);
 
     game = engine.createGame(settings);
@@ -145,7 +147,9 @@
 
   function syncSetupPreview() {
     ui.updateSetupState();
-    const board = engine.createBoard(ui.readSettings().fieldSize);
+    const settings = ui.readSettings();
+    urlState.writeSettings(settings);
+    const board = engine.createBoard(settings.fieldSize);
     renderer.resize(board);
     renderer.drawBoard(board, ui.getPalette());
   }
@@ -211,6 +215,7 @@
   });
 
   ui.applyPrefs(storage.loadPrefs());
+  ui.applyPrefs(urlState.readSettings());
   syncSetupPreview();
 
   function playStepSounds(events) {

@@ -4,6 +4,7 @@
   const RUNTIME_SCRIPTS = [
     "dictionary.js",
     "storage.js",
+    "url-state.js",
     "engine.js",
     "renderer.js",
     "ui.js",
