@@ -13,9 +13,10 @@ This is a standalone browser game. It has no build step, no external packages, a
 5. `engine.js` owns game state and game rules.
 6. `renderer.js` draws the board, items, and snakes on the canvas.
 7. `ui.js` owns DOM reads, DOM writes, theme state, and screen state.
-8. `app.js` wires input, animation, rendering, and game lifecycle.
+8. `sound.js` owns the Web Audio sound effects.
+9. `app.js` wires input, animation, rendering, sound, and game lifecycle.
 
-The files attach their APIs to `window.SnakeConfig`, `window.SnakeDictionary`, `window.SnakeStorage`, `window.SnakeEngine`, `window.SnakeRenderer`, and `window.SnakeUI`.
+The files attach their APIs to `window.SnakeConfig`, `window.SnakeDictionary`, `window.SnakeStorage`, `window.SnakeEngine`, `window.SnakeRenderer`, `window.SnakeUI`, and `window.SnakeSound`.
 
 ## Main Boundaries
 
@@ -24,6 +25,8 @@ The files attach their APIs to `window.SnakeConfig`, `window.SnakeDictionary`, `
 `renderer.js` is the canvas layer. It receives a game object and a palette from the UI, then draws the board, item SVGs, snake bodies, and snake eyes.
 
 `ui.js` is the DOM layer. It reads setup form values, renders scoreboard and target words, controls overlays, applies themes, and exposes CSS palette values to the renderer.
+
+`sound.js` is the audio layer. It uses the Web Audio API to play generated effects for good hits, bad hits, and game over. It has no gameplay decisions.
 
 `app.js` is the coordinator. It starts games, runs the animation loop, handles keyboard and button events, and asks the engine, UI, renderer, and storage modules to do their jobs.
 

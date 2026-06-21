@@ -7,6 +7,7 @@
     "engine.js",
     "renderer.js",
     "ui.js",
+    "sound.js",
     "app.js",
   ];
 

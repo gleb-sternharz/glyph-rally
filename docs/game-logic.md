@@ -27,6 +27,8 @@ On each update:
 7. Tails are trimmed or growth is applied.
 8. The engine reports events back to `app.js`.
 
+The engine reports good-hit, bad-hit, score, target, board-filled, and game-over events. `app.js` uses those events to update the UI and play sounds; the engine itself does not depend on audio or DOM code.
+
 Slow and fast speeds use simultaneous updates for all alive snakes. Manual speed passes the pressed player's index into the engine, so only the snake controlled by that key moves on that key press.
 
 ## Border Behavior

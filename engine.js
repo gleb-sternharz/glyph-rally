@@ -65,6 +65,8 @@
   function updateGame(game, options = {}) {
     const events = {
       itemHit: false,
+      badHit: false,
+      goodHit: false,
       scoreChanged: false,
       targetChanged: false,
       gameOver: false,
@@ -377,6 +379,8 @@
 
   function resolveItemHit(game, player, item, events) {
     events.itemHit = true;
+    events.goodHit = events.goodHit || item.effect === "grow";
+    events.badHit = events.badHit || item.effect === "shrink";
 
     if (item.effect === "grow") {
       player.score += 1;

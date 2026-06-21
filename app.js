@@ -5,6 +5,7 @@
   const engine = window.SnakeEngine;
   const storage = window.SnakeStorage;
   const ui = window.SnakeUI.createUi();
+  const sound = window.SnakeSound.createSound();
   const renderer = window.SnakeRenderer.createRenderer(ui.elements.canvas);
 
   const runtime = {
@@ -18,6 +19,7 @@
   let game = null;
 
   function startGame(settings) {
+    sound.unlock();
     stopLoop();
     storage.savePrefs(settings);
     ui.applyTheme(settings.theme);
@@ -78,6 +80,7 @@
     }
 
     const events = engine.updateGame(game, options);
+    playStepSounds(events);
     if (events.scoreChanged) {
       ui.renderScoreboard(game.players);
     }
@@ -92,6 +95,7 @@
   function finishGame() {
     runtime.over = true;
     runtime.paused = false;
+    sound.gameOver();
     ui.setPauseButtonPaused(false);
     ui.renderScoreboard(game.players);
 
@@ -150,12 +154,20 @@
   ui.elements.setupForm.addEventListener("change", syncSetupPreview);
   ui.elements.setupForm.addEventListener("submit", (event) => {
     event.preventDefault();
+    sound.unlock();
     startGame(ui.readSettings());
   });
 
-  ui.elements.pauseButton.addEventListener("click", togglePause);
-  ui.elements.restartButton.addEventListener("click", () => startGame(ui.readSettings()));
+  ui.elements.pauseButton.addEventListener("click", () => {
+    sound.unlock();
+    togglePause();
+  });
+  ui.elements.restartButton.addEventListener("click", () => {
+    sound.unlock();
+    startGame(ui.readSettings());
+  });
   ui.elements.setupButton.addEventListener("click", () => {
+    sound.unlock();
     stopLoop();
     game = null;
     ui.showSetupScreen();
@@ -171,12 +183,14 @@
 
     if (event.code === "Space") {
       event.preventDefault();
+      sound.unlock();
       togglePause();
       return;
     }
 
     if (event.code === "Enter" && runtime.over) {
       event.preventDefault();
+      sound.unlock();
       startGame(ui.readSettings());
       return;
     }
@@ -187,6 +201,7 @@
     }
 
     event.preventDefault();
+    sound.unlock();
     if (binding.player < game.mode) {
       const accepted = engine.setDirection(game, binding.player, binding.dir);
       if (accepted) {
@@ -197,4 +212,16 @@
 
   ui.applyPrefs(storage.loadPrefs());
   syncSetupPreview();
+
+  function playStepSounds(events) {
+    if (events.gameOver) {
+      return;
+    }
+    if (events.goodHit) {
+      sound.goodHit();
+    }
+    if (events.badHit) {
+      sound.badHit();
+    }
+  }
 })(window);
