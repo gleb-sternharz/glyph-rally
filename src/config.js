@@ -3,8 +3,20 @@
 
   // Preferred visible cell size in CSS pixels; the renderer keeps the canvas sharp.
   const CELL_SIZE = 32;
+  const DEFAULT_FIELD_SIZE = "auto";
 
   const FIELD_SIZES = {
+    auto: {
+      auto: true,
+      minCols: 12,
+      minRows: 10,
+      maxCols: 42,
+      maxRows: 32,
+      minCell: 16,
+      maxCell: CELL_SIZE,
+      targetCell: 28,
+      phoneTargetCell: 22,
+    },
     small: { cols: 40, rows: 20 },
     medium: { cols: 40, rows: 28 },
     large: { cols: 50, rows: 35 },
@@ -89,6 +101,7 @@
     DIRS,
     KEY_MAP,
     DEFAULT_PLAYERS,
+    DEFAULT_FIELD_SIZE,
     CLASSIC_ITEM_COUNTS_BY_MODE,
     DEFAULT_DICTIONARY_ID,
     DICTIONARIES,

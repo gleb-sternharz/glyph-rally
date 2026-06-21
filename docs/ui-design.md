@@ -44,12 +44,14 @@ Game screen layout:
 - `styles/game.css` `.scoreboard`: one or two score columns.
 - `styles/game.css` `.reading-prompt`: target-word panel width and spacing.
 - `styles/game.css` `.arena-wrap`: canvas frame and aspect ratio.
+- `styles/game.css` `.mobile-controls`: phone D-pad below the arena.
 
 Canvas board size:
 
-- `src/config.js` `CELL_SIZE` sets preferred cell size.
-- `src/config.js` `FIELD_SIZES` sets board columns and rows.
+- `src/config.js` `CELL_SIZE` sets the baseline preferred cell size.
+- `src/config.js` `FIELD_SIZES` sets fixed board columns and rows, plus the `auto` sizing bounds.
 - `src/presentation/renderer.js` sets `--arena-preferred-width` at runtime so the reading prompt aligns with the arena.
+- `src/presentation/ui.js` measures viewport room for `auto`, including header and phone D-pad space.
 
 ## Where To Change Spacing
 
@@ -74,6 +76,7 @@ Game spacing:
 - `styles/game.css` `.scoreboard gap`
 - `styles/game.css` `.reading-prompt padding` and `gap`
 - `styles/game.css` `.overlay padding`
+- `styles/game.css` `.mobile-controls gap`
 
 ## Where To Change Font Sizes
 
@@ -109,6 +112,8 @@ Game text:
 - toggle disabled setup states
 - render scorecards and target words
 - show and hide overlays
+- force one-player setup and expose D-pad controls in phone mode
+- measure board-fit constraints for auto-sized fields
 - expose the CSS color palette to `src/presentation/renderer.js`
 
 Game rules should stay in `src/core/engine.js`, and canvas drawing should stay in `src/presentation/renderer.js` and `src/core/dictionary.js`.

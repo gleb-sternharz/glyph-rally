@@ -19,8 +19,6 @@ This is a standalone browser game. It has no build step, no external packages, a
 
 The files attach their APIs to `window.SnakeConfig`, `window.SnakeDictionary`, `window.SnakeStorage`, `window.SnakeUrlState`, `window.SnakeEngine`, `window.SnakeRenderer`, `window.SnakeUI`, and `window.SnakeSound`.
 
-## Main Boundaries
-
 ## Folder Layout
 
 - `src/`: runtime JavaScript loaded by `src/boot.js`.
@@ -38,11 +36,11 @@ The files attach their APIs to `window.SnakeConfig`, `window.SnakeDictionary`, `
 
 `src/presentation/renderer.js` is the canvas layer. It receives a game object and a palette from the UI, then draws the board, item SVGs, snake bodies, and snake eyes.
 
-`src/presentation/ui.js` is the DOM layer. It reads setup form values, renders scoreboard and target words, controls overlays, applies themes, and exposes CSS palette values to the renderer.
+`src/presentation/ui.js` is the DOM layer. It reads setup form values, renders scoreboard and target words, controls overlays, applies themes, exposes CSS palette values to the renderer, and applies phone-mode setup state.
 
 `src/presentation/sound.js` is the audio layer. It uses the Web Audio API to play generated effects for good hits, bad hits, and game over. It has no gameplay decisions.
 
-`src/app.js` is the coordinator. It starts games, runs the animation loop, handles keyboard and button events, and asks the engine, UI, renderer, sound, storage, and URL modules to do their jobs.
+`src/app.js` is the coordinator. It starts games, runs the animation loop, handles keyboard, swipe, D-pad, and button events, and asks the engine, UI, renderer, sound, storage, and URL modules to do their jobs.
 
 `src/core/dictionary.js` is a small asset/data runtime. It parses configured dictionary data, normalizes words to uppercase, creates internal `matchKey` values from icon paths, and draws SVG icons on the canvas.
 

@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mobile layout smoke</title>
+    <link rel="stylesheet" href="../../styles/common.css">
+    <link rel="stylesheet" href="../../styles/setup.css">
+    <link rel="stylesheet" href="../../styles/game.css">
+  </head>
+  <body>
+    <pre id="result">running</pre>
+    <main class="shell">
+      <section id="setupScreen" class="setup-screen" aria-labelledby="setupTitle">
+        <div class="setup-copy">
+          <p class="eyebrow">Smoke</p>
+          <h1 id="setupTitle">Snake</h1>
+          <p class="lede">Mobile layout smoke.</p>
+        </div>
+        <form id="setupForm" class="setup-form">
+          <fieldset class="mode-picker">
+            <legend>Players</legend>
+            <label><input type="radio" name="mode" value="1"><span>One</span></label>
+            <label><input type="radio" name="mode" value="2" checked><span>Two</span></label>
+          </fieldset>
+          <div class="player-grid">
+            <section class="player-panel">
+              <div class="player-heading">
+                <span class="player-mark" data-player="0"></span>
+                <h2>Player 1</h2>
+                <div class="key-row" data-controls-player="0"></div>
+              </div>
+              <label class="field"><span>Name</span><input id="playerOneName" name="playerOneName" value="Lime"></label>
+              <label class="field"><span>Color</span><input id="playerOneColor" name="playerOneColor" type="color" value="#51d88a"></label>
+            </section>
+            <section class="player-panel" id="playerTwoPanel">
+              <div class="player-heading">
+                <span class="player-mark" data-player="1"></span>
+                <h2>Player 2</h2>
+                <div class="key-row" data-controls-player="1"></div>
+              </div>
+              <label class="field"><span>Name</span><input id="playerTwoName" name="playerTwoName" value="Berry"></label>
+              <label class="field"><span>Color</span><input id="playerTwoColor" name="playerTwoColor" type="color" value="#5aa7ff"></label>
+            </section>
+          </div>
+          <div class="settings-grid">
+            <fieldset class="setting-picker setting-picker--two">
+              <legend>Challenge</legend>
+              <label><input type="radio" name="challenge" value="classic" checked><span>Classic</span></label>
+              <label><input type="radio" name="challenge" value="reading"><span>Reading</span></label>
+            </fieldset>
+            <fieldset class="setting-picker setting-picker--three">
+              <legend>Speed</legend>
+              <label><input type="radio" name="speed" value="manual" checked><span>No auto</span></label>
+              <label><input type="radio" name="speed" value="slow"><span>Slow</span></label>
+              <label><input type="radio" name="speed" value="fast"><span>Fast</span></label>
+            </fieldset>
+            <fieldset class="setting-picker setting-picker--four">
+              <legend>Field size</legend>
+              <label><input type="radio" name="fieldSize" value="auto" checked><span>Auto</span></label>
+              <label><input type="radio" name="fieldSize" value="small"><span>Small</span></label>
+              <label><input type="radio" name="fieldSize" value="medium"><span>Medium</span></label>
+              <label><input type="radio" name="fieldSize" value="large"><span>Large</span></label>
+            </fieldset>
+            <label class="field setting-field" id="dictionaryField">
+              <span>Dictionary</span>
+              <select id="dictionarySelect" name="dictionaryId"></select>
+            </label>
+            <fieldset class="setting-picker setting-picker--two setting-picker--wide">
+              <legend>Theme</legend>
+              <label><input type="radio" name="theme" value="dark" checked><span>Dark</span></label>
+              <label><input type="radio" name="theme" value="light"><span>Light</span></label>
+            </fieldset>
+          </div>
+          <button class="primary-button" type="submit">Start game</button>
+        </form>
+      </section>
+      <section id="gameScreen" class="game-screen is-hidden">
+        <header class="game-header">
+          <div id="readingPrompt" class="reading-prompt is-hidden"><strong id="targetWord">APPLE</strong></div>
+          <div class="scoreboard" id="scoreboard"></div>
+          <div class="toolbar">
+            <button id="pauseButton" class="icon-button" type="button"><span>||</span></button>
+            <button id="restartButton" class="icon-button" type="button"><span>&#8635;</span></button>
+            <button id="setupButton" class="icon-button" type="button"><span>&#9881;</span></button>
+          </div>
+        </header>
+        <div class="arena-wrap">
+          <canvas id="gameCanvas" width="960" height="672"></canvas>
+          <div id="overlay" class="overlay is-hidden">
+            <p id="overlayKicker" class="eyebrow">Paused</p>
+            <h2 id="overlayTitle">Game paused</h2>
+            <p id="overlayText">Press resume when you are ready.</p>
+            <button id="overlayButton" class="primary-button" type="button">Resume</button>
+          </div>
+        </div>
+        <div id="mobileControls" class="mobile-controls is-hidden">
+          <button class="mobile-control" type="button" data-dir="up">&#8593;</button>
+          <button class="mobile-control" type="button" data-dir="left">&#8592;</button>
+          <button class="mobile-control" type="button" data-dir="down">&#8595;</button>
+          <button class="mobile-control" type="button" data-dir="right">&#8594;</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="../../src/config.js"></script>
+    <script src="../../dictionaries/english.js"></script>
+    <script src="../../dictionaries/french.js"></script>
+    <script src="../../dictionaries/german.js"></script>
+    <script src="../../dictionaries/greek.js"></script>
+    <script src="../../dictionaries/russian.js"></script>
+    <script src="../../src/core/dictionary.js"></script>
+    <script src="../../src/core/storage.js"></script>
+    <script src="../../src/core/url-state.js"></script>
+    <script src="../../src/core/engine.js"></script>
+    <script src="../../src/presentation/renderer.js"></script>
+    <script src="../../src/presentation/ui.js"></script>
+    <script src="../../src/presentation/sound.js"></script>
+    <script src="../../src/app.js"></script>
+    <script>
+      (function () {
+        "use strict";
+
+        setTimeout(() => {
+          document.querySelector("#setupForm").requestSubmit();
+
+          setTimeout(() => {
+            assert(document.documentElement.classList.contains("is-phone-mode"), "Expected phone mode.");
+            assert(!document.querySelector("#gameScreen").classList.contains("is-hidden"), "Expected game screen.");
+            assert(document.querySelector("#playerTwoPanel").classList.contains("is-phone-hidden"), "Expected Player 2 hidden.");
+            assert(!document.querySelector("#mobileControls").classList.contains("is-hidden"), "Expected D-pad visible.");
+            assert(document.querySelectorAll(".score-card").length === 1, "Expected one score card.");
+            const canvas = document.querySelector("#gameCanvas");
+            assert(canvas.width > 0, "Expected sized canvas.");
+
+            const beforeMove = canvas.toDataURL();
+            document.querySelector('[data-dir="down"]').click();
+
+            setTimeout(() => {
+              assert(canvas.toDataURL() !== beforeMove, "Expected D-pad to move manual snake.");
+              document.querySelector("#result").textContent = "mobile layout smoke ok";
+            }, 100);
+          }, 100);
+        }, 100);
+
+        function assert(condition, message) {
+          if (!condition) {
+            throw new Error(message);
+          }
+        }
+      })();
+    </script>
+  </body>
+</html>

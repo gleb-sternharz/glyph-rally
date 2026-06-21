@@ -98,14 +98,18 @@
               </label>
             </fieldset>
 
-            <fieldset class="setting-picker setting-picker--three">
+            <fieldset class="setting-picker setting-picker--four">
               <legend>Field size</legend>
+              <label>
+                <input type="radio" name="fieldSize" value="auto" checked>
+                <span>Auto</span>
+              </label>
               <label>
                 <input type="radio" name="fieldSize" value="small">
                 <span>Small</span>
               </label>
               <label>
-                <input type="radio" name="fieldSize" value="medium" checked>
+                <input type="radio" name="fieldSize" value="medium">
                 <span>Medium</span>
               </label>
               <label>
@@ -163,6 +167,21 @@
             <p id="overlayText">Press resume when you are ready.</p>
             <button id="overlayButton" class="primary-button" type="button">Resume</button>
           </div>
+        </div>
+
+        <div id="mobileControls" class="mobile-controls is-hidden" aria-label="Mobile controls">
+          <button class="mobile-control" type="button" data-dir="up" aria-label="Move up">
+            <span aria-hidden="true">&#8593;</span>
+          </button>
+          <button class="mobile-control" type="button" data-dir="left" aria-label="Move left">
+            <span aria-hidden="true">&#8592;</span>
+          </button>
+          <button class="mobile-control" type="button" data-dir="down" aria-label="Move down">
+            <span aria-hidden="true">&#8595;</span>
+          </button>
+          <button class="mobile-control" type="button" data-dir="right" aria-label="Move right">
+            <span aria-hidden="true">&#8594;</span>
+          </button>
         </div>
       </section>
     </main>

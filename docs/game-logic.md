@@ -7,12 +7,18 @@ The game rules live in `src/core/engine.js`.
 `createGame(settings)` builds a game object with:
 
 - selected mode, speed, field size, theme, challenge, and dictionary id
-- a board from `createBoard(fieldSize)`
+- a board from `createBoard(fieldSize, boardFit)`
 - one or two player objects
 - initial items for classic or reading mode
 - an initial tick duration from the selected speed
 
 Each player has a body array, direction, pending direction, score, alive flag, and pending growth counter.
+
+## Board Sizing
+
+Fixed board sizes use the configured columns and rows from `FIELD_SIZES`.
+
+The `auto` board size receives measured width and height from the UI. The engine chooses columns, rows, and preferred cell size within configured bounds so the board fits the visible game area. During an active auto-sized game, viewport changes preserve the current row/column grid and only refit the preferred cell size so existing snake and item positions are not disrupted.
 
 ## Movement
 
@@ -30,6 +36,8 @@ On each update:
 The engine reports good-hit, bad-hit, score, target, board-filled, and game-over events. `src/app.js` uses those events to update the UI and play sounds; the engine itself does not depend on audio or DOM code.
 
 Slow and fast speeds use simultaneous updates for all alive snakes. Manual speed passes the pressed player's index into the engine, so only the snake controlled by that key moves on that key press.
+
+Keyboard, mobile D-pad, and swipe input all pass through the same direction path in `src/app.js`. On phones, setup is forced to one-player mode and mobile controls target player 1.
 
 ## Border Behavior
 

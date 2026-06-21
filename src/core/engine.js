@@ -5,6 +5,7 @@
     CELL_SIZE,
     CLASSIC_ITEM_COUNTS_BY_MODE,
     DEFAULT_DICTIONARY_ID,
+    DEFAULT_FIELD_SIZE,
     DICTIONARIES,
     DIRS,
     FIELD_SIZES,
@@ -32,8 +33,12 @@
     },
   };
 
-  function createBoard(fieldSize) {
-    const size = FIELD_SIZES[fieldSize] ?? FIELD_SIZES.medium;
+  function createBoard(fieldSize = DEFAULT_FIELD_SIZE, fit = {}) {
+    const size = FIELD_SIZES[fieldSize] ?? FIELD_SIZES[DEFAULT_FIELD_SIZE] ?? FIELD_SIZES.medium;
+    if (size.auto) {
+      return createAutoBoard(size, fit);
+    }
+
     return {
       cols: size.cols,
       rows: size.rows,
@@ -49,7 +54,7 @@
       theme: settings.theme,
       dictionaryId: normalizeDictionaryId(settings.dictionaryId),
       challenge: GAME_TYPES[settings.challenge] ? settings.challenge : GAME_TYPES.classic,
-      board: createBoard(settings.fieldSize),
+      board: createBoard(settings.fieldSize, settings.boardFit),
       players: [],
       items: [],
       targetEntry: null,
@@ -163,6 +168,46 @@
     return {
       type: "draw",
       score: topScore,
+    };
+  }
+
+  function createAutoBoard(config, fit) {
+    const maxWidth = positiveNumber(fit.maxWidth, fit.phoneMode ? 360 : 960);
+    const maxHeight = positiveNumber(fit.maxHeight, fit.phoneMode ? 420 : 720);
+    const preserved = fit.preserveBoard;
+    const targetCell = fit.phoneMode ? config.phoneTargetCell : config.targetCell;
+    const minCols = positiveInteger(config.minCols, 12);
+    const minRows = positiveInteger(config.minRows, 10);
+    const maxCols = positiveInteger(config.maxCols, 42);
+    const maxRows = positiveInteger(config.maxRows, 32);
+    const minCell = positiveInteger(config.minCell, 16);
+    const maxCell = positiveInteger(config.maxCell, CELL_SIZE);
+    let cols = preserved ? positiveInteger(preserved.cols, minCols) : Math.floor(maxWidth / targetCell);
+    let rows = preserved ? positiveInteger(preserved.rows, minRows) : Math.floor(maxHeight / targetCell);
+
+    cols = clamp(cols, minCols, maxCols);
+    rows = clamp(rows, minRows, maxRows);
+
+    if (!preserved) {
+      while (cols > minCols || rows > minRows) {
+        const fittedCell = Math.floor(Math.min(maxWidth / cols, maxHeight / rows));
+        if (fittedCell >= minCell) {
+          break;
+        }
+        if (maxWidth / cols < maxHeight / rows && cols > minCols) {
+          cols -= 1;
+        } else if (rows > minRows) {
+          rows -= 1;
+        } else {
+          break;
+        }
+      }
+    }
+
+    return {
+      cols,
+      rows,
+      cell: clamp(Math.floor(Math.min(maxWidth / cols, maxHeight / rows)), 12, maxCell),
     };
   }
 
@@ -475,6 +520,18 @@
     return DICTIONARIES.some((dictionary) => dictionary.id === dictionaryId)
       ? dictionaryId
       : DEFAULT_DICTIONARY_ID;
+  }
+
+  function positiveNumber(value, fallback) {
+    return Number.isFinite(value) && value > 0 ? value : fallback;
+  }
+
+  function positiveInteger(value, fallback) {
+    return Number.isFinite(value) && value > 0 ? Math.floor(value) : fallback;
+  }
+
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
   }
 
   window.SnakeEngine = {

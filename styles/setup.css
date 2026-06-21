@@ -91,6 +91,10 @@ fieldset {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.setting-picker--four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .mode-picker legend,
 .setting-picker legend {
   grid-column: 1 / -1;
@@ -167,6 +171,11 @@ fieldset {
 
 .player-panel.is-disabled {
   opacity: 0.45;
+}
+
+:root.is-phone-mode .mode-picker,
+:root.is-phone-mode .player-panel.is-phone-hidden {
+  display: none;
 }
 
 .player-heading {

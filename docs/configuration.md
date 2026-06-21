@@ -7,7 +7,8 @@ Most gameplay settings live in `src/config.js`. Setup-screen styling lives in `s
 Edit `src/config.js` for:
 
 - `CELL_SIZE`: preferred visible cell size in CSS pixels. The renderer keeps the canvas sharp at device pixel ratio.
-- `FIELD_SIZES`: named board sizes used by the setup field-size picker.
+- `DEFAULT_FIELD_SIZE`: default field-size choice. It is currently `auto`.
+- `FIELD_SIZES`: named board sizes used by the setup field-size picker. `auto` uses viewport measurements, while `small`, `medium`, and `large` are fixed grids.
 - `SPEEDS`: manual, slow, and fast timing. `auto: false` means a snake moves only after its own direction key input.
 - `KEY_MAP`: keyboard bindings for each player. The movement handler and the visible setup-screen key hints both read this map.
 - `DEFAULT_PLAYERS`: default names and colors in the setup form.
@@ -80,3 +81,5 @@ Supported query parameters:
 - `c1`, `c2`: player colors as six-digit hex values, without `#`
 
 On startup, URL settings are applied after localStorage preferences, so a shared link wins over saved local choices.
+
+`field=auto` is the default generated share-link value. On phone-mode screens, an incoming `mode=2` setting is forced to one-player mode before the URL is rewritten.

@@ -3,6 +3,7 @@
 
   const {
     DEFAULT_DICTIONARY_ID,
+    DEFAULT_FIELD_SIZE,
     DEFAULT_PLAYERS,
     DICTIONARIES,
     FIELD_SIZES,
@@ -17,7 +18,10 @@
       canvas: document.querySelector("#gameCanvas"),
       setupScreen: document.querySelector("#setupScreen"),
       gameScreen: document.querySelector("#gameScreen"),
+      gameHeader: document.querySelector(".game-header"),
+      arena: document.querySelector(".arena-wrap"),
       setupForm: document.querySelector("#setupForm"),
+      modePicker: document.querySelector(".mode-picker"),
       playerTwoPanel: document.querySelector("#playerTwoPanel"),
       scoreboard: document.querySelector("#scoreboard"),
       pauseButton: document.querySelector("#pauseButton"),
@@ -31,8 +35,12 @@
       readingPrompt: document.querySelector("#readingPrompt"),
       targetWord: document.querySelector("#targetWord"),
       dictionaryField: document.querySelector("#dictionaryField"),
+      mobileControls: document.querySelector("#mobileControls"),
+      mobileControlButtons: document.querySelectorAll("[data-dir]"),
     };
     const playerMarks = elements.setupScreen.querySelectorAll(".player-mark");
+    const modeInputs = elements.setupForm.querySelectorAll('input[name="mode"]');
+    let phoneMode = false;
     populateDictionarySelect();
     populateControlHints();
 
@@ -73,13 +81,22 @@
     }
 
     function updateSetupState() {
-      const mode = Number(elements.setupForm.elements.mode.value);
+      if (phoneMode) {
+        elements.setupForm.elements.mode.value = "1";
+      }
+
+      const mode = phoneMode ? 1 : Number(elements.setupForm.elements.mode.value);
       const p1Color = elements.setupForm.elements.playerOneColor.value;
       const p2Color = elements.setupForm.elements.playerTwoColor.value;
       const readingMode = elements.setupForm.elements.challenge.value === GAME_TYPES.reading;
 
       applyTheme(elements.setupForm.elements.theme.value);
+      elements.modePicker.classList.toggle("is-disabled", phoneMode);
+      for (const input of modeInputs) {
+        input.disabled = phoneMode;
+      }
       elements.playerTwoPanel.classList.toggle("is-disabled", mode === 1);
+      elements.playerTwoPanel.classList.toggle("is-phone-hidden", phoneMode);
       elements.setupForm.elements.playerTwoName.disabled = mode === 1;
       elements.setupForm.elements.playerTwoColor.disabled = mode === 1;
       elements.setupForm.elements.dictionaryId.disabled = !readingMode;
@@ -89,7 +106,7 @@
     }
 
     function readSettings() {
-      const mode = Number(elements.setupForm.elements.mode.value) === 1 ? 1 : 2;
+      const mode = phoneMode || Number(elements.setupForm.elements.mode.value) === 1 ? 1 : 2;
       const challenge = GAME_TYPES[elements.setupForm.elements.challenge.value]
         ? elements.setupForm.elements.challenge.value
         : GAME_TYPES.classic;
@@ -106,7 +123,7 @@
         : "fast";
       const fieldSize = FIELD_SIZES[elements.setupForm.elements.fieldSize.value]
         ? elements.setupForm.elements.fieldSize.value
-        : "medium";
+        : DEFAULT_FIELD_SIZE;
       const theme = elements.setupForm.elements.theme.value === "light" ? "light" : "dark";
       const dictionaryId = isDictionaryId(elements.setupForm.elements.dictionaryId.value)
         ? elements.setupForm.elements.dictionaryId.value
@@ -118,6 +135,7 @@
         dictionaryId,
         speed,
         fieldSize,
+        boardFit: measureBoardFit(),
         theme,
         players: [
           {
@@ -253,6 +271,45 @@
       };
     }
 
+    function setPhoneMode(nextPhoneMode) {
+      phoneMode = Boolean(nextPhoneMode);
+      document.documentElement.classList.toggle("is-phone-mode", phoneMode);
+      elements.mobileControls.hidden = !phoneMode;
+      elements.mobileControls.classList.toggle("is-hidden", !phoneMode);
+      updateSetupState();
+    }
+
+    function isPhoneMode() {
+      return phoneMode;
+    }
+
+    function measureBoardFit() {
+      const viewport = window.visualViewport;
+      const viewportWidth = viewport?.width || document.documentElement.clientWidth || window.innerWidth || 960;
+      const viewportHeight = viewport?.height || document.documentElement.clientHeight || window.innerHeight || 720;
+      const shell = elements.gameScreen.closest(".shell");
+      const shellWidth = shell?.clientWidth || viewportWidth;
+      const horizontalPadding = phoneMode ? 20 : 64;
+      const maxWidth = Math.max(260, Math.min(shellWidth, viewportWidth - horizontalPadding));
+      const readingMode = elements.setupForm.elements.challenge.value === GAME_TYPES.reading;
+      const fallbackHeader = phoneMode
+        ? (readingMode ? 128 : 72)
+        : (readingMode ? 106 : 78);
+      const headerHeight = visibleHeight(elements.gameHeader, fallbackHeader);
+      const controlsHeight = phoneMode ? visibleHeight(elements.mobileControls, 126) : 0;
+      const verticalSpace = phoneMode ? 42 : 104;
+      const maxHeight = Math.max(
+        phoneMode ? 160 : 260,
+        viewportHeight - headerHeight - controlsHeight - verticalSpace,
+      );
+
+      return {
+        maxHeight,
+        maxWidth,
+        phoneMode,
+      };
+    }
+
     return {
       elements,
       applyPrefs,
@@ -265,9 +322,11 @@
       renderTarget,
       resetPauseButton,
       setPauseButtonPaused,
+      setPhoneMode,
       showGameScreen,
       showOverlay,
       showSetupScreen,
+      isPhoneMode,
       updateSetupState,
     };
 
@@ -354,6 +413,11 @@
 
   function cssVar(rootStyle, name) {
     return rootStyle.getPropertyValue(name).trim();
+  }
+
+  function visibleHeight(element, fallback) {
+    const rect = element?.getBoundingClientRect();
+    return rect?.height > 0 ? rect.height : fallback;
   }
 
   function isTypingTarget(target) {

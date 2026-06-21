@@ -8,6 +8,8 @@
   const ui = window.SnakeUI.createUi();
   const sound = window.SnakeSound.createSound();
   const renderer = window.SnakeRenderer.createRenderer(ui.elements.canvas);
+  const phoneQuery = window.matchMedia?.("(pointer: coarse) and (max-width: 700px)");
+  const narrowQuery = window.matchMedia?.("(max-width: 700px)");
 
   const runtime = {
     running: false,
@@ -18,6 +20,8 @@
     animationId: 0,
   };
   let game = null;
+  let resizeFrame = 0;
+  let swipeStart = null;
 
   function startGame(settings) {
     sound.unlock();
@@ -115,6 +119,20 @@
     }
   }
 
+  function resizeGameBoard() {
+    if (!game) {
+      return;
+    }
+
+    const settings = ui.readSettings();
+    const boardFit = game.fieldSize === "auto"
+      ? { ...settings.boardFit, preserveBoard: game.board }
+      : settings.boardFit;
+    game.board = engine.createBoard(game.fieldSize, boardFit);
+    renderer.resize(game.board);
+    draw();
+  }
+
   function togglePause() {
     if (!runtime.running || runtime.over) {
       return;
@@ -145,13 +163,54 @@
     draw();
   }
 
+  function applyDirection(playerIndex, dir) {
+    if (!game || runtime.over || playerIndex >= game.mode) {
+      return;
+    }
+
+    sound.unlock();
+    if (engine.setDirection(game, playerIndex, dir)) {
+      advanceManualStep(playerIndex);
+    }
+  }
+
   function syncSetupPreview() {
     ui.updateSetupState();
     const settings = ui.readSettings();
     urlState.writeSettings(settings);
-    const board = engine.createBoard(settings.fieldSize);
+    const board = engine.createBoard(settings.fieldSize, settings.boardFit);
     renderer.resize(board);
     renderer.drawBoard(board, ui.getPalette());
+  }
+
+  function syncViewportState() {
+    const phoneMode = isPhoneViewport();
+    ui.setPhoneMode(phoneMode);
+
+    if (!game) {
+      syncSetupPreview();
+      return;
+    }
+
+    if (phoneMode && game.mode !== 1) {
+      startGame(ui.readSettings());
+      return;
+    }
+
+    resizeGameBoard();
+  }
+
+  function scheduleViewportSync() {
+    cancelAnimationFrame(resizeFrame);
+    resizeFrame = requestAnimationFrame(syncViewportState);
+  }
+
+  function isPhoneViewport() {
+    const mobileUserAgent = /Android|iPhone|iPod|Mobile/i.test(navigator.userAgent);
+    return Boolean(
+      phoneQuery?.matches ||
+      (narrowQuery?.matches && (navigator.maxTouchPoints > 0 || mobileUserAgent))
+    );
   }
 
   ui.elements.setupForm.addEventListener("input", syncSetupPreview);
@@ -180,6 +239,45 @@
     syncSetupPreview();
   });
 
+  for (const button of ui.elements.mobileControlButtons) {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      applyDirection(0, event.currentTarget.dataset.dir);
+    });
+  }
+
+  ui.elements.arena.addEventListener("pointerdown", (event) => {
+    if (
+      !ui.isPhoneMode() ||
+      !runtime.running ||
+      runtime.paused ||
+      runtime.over ||
+      !game ||
+      event.target.closest("button")
+    ) {
+      return;
+    }
+
+    swipeStart = {
+      id: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+    };
+    ui.elements.arena.setPointerCapture?.(event.pointerId);
+    event.preventDefault();
+  });
+
+  ui.elements.arena.addEventListener("pointermove", (event) => {
+    if (!swipeStart || swipeStart.id !== event.pointerId) {
+      return;
+    }
+
+    event.preventDefault();
+  });
+
+  ui.elements.arena.addEventListener("pointerup", finishSwipe);
+  ui.elements.arena.addEventListener("pointercancel", finishSwipe);
+
   window.addEventListener("keydown", (event) => {
     if (window.SnakeUI.isTypingTarget(event.target) || !runtime.running || !game) {
       return;
@@ -205,18 +303,51 @@
     }
 
     event.preventDefault();
-    sound.unlock();
-    if (binding.player < game.mode) {
-      const accepted = engine.setDirection(game, binding.player, binding.dir);
-      if (accepted) {
-        advanceManualStep(binding.player);
-      }
-    }
+    applyDirection(binding.player, binding.dir);
   });
 
+  if (phoneQuery?.addEventListener) {
+    phoneQuery.addEventListener("change", scheduleViewportSync);
+  } else if (phoneQuery?.addListener) {
+    phoneQuery.addListener(scheduleViewportSync);
+  }
+  if (narrowQuery?.addEventListener) {
+    narrowQuery.addEventListener("change", scheduleViewportSync);
+  } else if (narrowQuery?.addListener) {
+    narrowQuery.addListener(scheduleViewportSync);
+  }
+
+  window.addEventListener("resize", scheduleViewportSync);
+  window.addEventListener("orientationchange", scheduleViewportSync);
+
+  ui.setPhoneMode(isPhoneViewport());
   ui.applyPrefs(storage.loadPrefs());
   ui.applyPrefs(urlState.readSettings());
+  ui.setPhoneMode(isPhoneViewport());
   syncSetupPreview();
+
+  function finishSwipe(event) {
+    if (!swipeStart || swipeStart.id !== event.pointerId) {
+      return;
+    }
+
+    const dx = event.clientX - swipeStart.x;
+    const dy = event.clientY - swipeStart.y;
+    const distance = Math.max(Math.abs(dx), Math.abs(dy));
+    if (ui.elements.arena.hasPointerCapture?.(event.pointerId)) {
+      ui.elements.arena.releasePointerCapture(event.pointerId);
+    }
+    swipeStart = null;
+    event.preventDefault();
+
+    if (distance < 24) {
+      return;
+    }
+
+    applyDirection(0, Math.abs(dx) > Math.abs(dy)
+      ? (dx > 0 ? "right" : "left")
+      : (dy > 0 ? "down" : "up"));
+  }
 
   function playStepSounds(events) {
     if (events.gameOver) {
