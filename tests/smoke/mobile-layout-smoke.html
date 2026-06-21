@@ -123,11 +123,14 @@
         "use strict";
 
         setTimeout(() => {
+          document.querySelector("#setupScreen").style.paddingBottom = "720px";
+          window.scrollTo(0, document.body.scrollHeight);
           document.querySelector("#setupForm").requestSubmit();
 
           setTimeout(() => {
             assert(document.documentElement.classList.contains("is-phone-mode"), "Expected phone mode.");
             assert(!document.querySelector("#gameScreen").classList.contains("is-hidden"), "Expected game screen.");
+            assert(window.scrollY < 2, "Expected game start to reset page scroll.");
             assert(document.querySelector("#playerTwoPanel").classList.contains("is-phone-hidden"), "Expected Player 2 hidden.");
             assert(!document.querySelector("#mobileControls").classList.contains("is-hidden"), "Expected D-pad visible.");
             assert(document.querySelectorAll(".score-card").length === 1, "Expected one score card.");

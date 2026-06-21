@@ -36,6 +36,9 @@
   --title-size: clamp(3rem, 9vw, 7rem);
   --game-title-size: clamp(2.2rem, 7vw, 4.8rem);
   --target-word-size: clamp(1.6rem, 5vw, 2.8rem);
+  --visible-viewport-height: 100vh;
+  --visible-viewport-top: 0px;
+  --phone-top-inset: 0px;
 }
 
 :root[data-theme="light"] {
@@ -187,7 +190,12 @@ h2 {
   :root.is-phone-mode {
     --page-gutter: 0;
     --page-padding-block: 0;
+    --phone-top-inset: max(env(safe-area-inset-top, 0px), var(--visible-viewport-top, 0px));
     --target-word-size: clamp(1.35rem, 8vw, 2.2rem);
+  }
+
+  :root.is-phone-mode .shell {
+    min-height: var(--visible-viewport-height, 100svh);
   }
 
   .primary-button {

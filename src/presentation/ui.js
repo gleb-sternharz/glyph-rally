@@ -276,6 +276,7 @@
       document.documentElement.classList.toggle("is-phone-mode", phoneMode);
       elements.mobileControls.hidden = !phoneMode;
       elements.mobileControls.classList.toggle("is-hidden", !phoneMode);
+      syncViewportMetrics();
       updateSetupState();
     }
 
@@ -283,14 +284,24 @@
       return phoneMode;
     }
 
+    function syncViewportMetrics() {
+      const metrics = getViewportMetrics();
+
+      document.documentElement.style.setProperty("--visible-viewport-height", `${metrics.height}px`);
+      document.documentElement.style.setProperty("--visible-viewport-top", `${phoneMode ? metrics.top : 0}px`);
+    }
+
+    function scrollToTop() {
+      window.scrollTo(0, 0);
+    }
+
     function measureBoardFit() {
-      const viewport = window.visualViewport;
-      const viewportWidth = viewport?.width || document.documentElement.clientWidth || window.innerWidth || 960;
-      const viewportHeight = viewport?.height || document.documentElement.clientHeight || window.innerHeight || 720;
+      const viewport = getViewportMetrics();
+      syncViewportMetrics();
       const shell = elements.gameScreen.closest(".shell");
-      const shellWidth = shell?.clientWidth || viewportWidth;
+      const shellWidth = shell?.clientWidth || viewport.width;
       const horizontalPadding = phoneMode ? 20 : 64;
-      const maxWidth = Math.max(260, Math.min(shellWidth, viewportWidth - horizontalPadding));
+      const maxWidth = Math.max(260, Math.min(shellWidth, viewport.width - horizontalPadding));
       const readingMode = elements.setupForm.elements.challenge.value === GAME_TYPES.reading;
       const fallbackHeader = phoneMode
         ? (readingMode ? 128 : 72)
@@ -298,9 +309,10 @@
       const headerHeight = visibleHeight(elements.gameHeader, fallbackHeader);
       const controlsHeight = phoneMode ? visibleHeight(elements.mobileControls, 126) : 0;
       const verticalSpace = phoneMode ? 42 : 104;
+      const topInset = phoneMode ? viewport.top : 0;
       const maxHeight = Math.max(
         phoneMode ? 160 : 260,
-        viewportHeight - headerHeight - controlsHeight - verticalSpace,
+        viewport.height - topInset - headerHeight - controlsHeight - verticalSpace,
       );
 
       return {
@@ -321,12 +333,14 @@
       renderScoreboard,
       renderTarget,
       resetPauseButton,
+      scrollToTop,
       setPauseButtonPaused,
       setPhoneMode,
       showGameScreen,
       showOverlay,
       showSetupScreen,
       isPhoneMode,
+      syncViewportMetrics,
       updateSetupState,
     };
 
@@ -418,6 +432,16 @@
   function visibleHeight(element, fallback) {
     const rect = element?.getBoundingClientRect();
     return rect?.height > 0 ? rect.height : fallback;
+  }
+
+  function getViewportMetrics() {
+    const viewport = window.visualViewport;
+
+    return {
+      width: viewport?.width || document.documentElement.clientWidth || window.innerWidth || 960,
+      height: viewport?.height || document.documentElement.clientHeight || window.innerHeight || 720,
+      top: Math.max(0, viewport?.offsetTop || 0),
+    };
   }
 
   function isTypingTarget(target) {

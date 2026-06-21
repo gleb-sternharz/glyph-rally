@@ -213,8 +213,9 @@ canvas {
   }
 
   :root.is-phone-mode .game-screen {
-    min-height: 100svh;
+    min-height: var(--visible-viewport-height, 100svh);
     align-content: start;
+    padding-top: var(--phone-top-inset, 0px);
   }
 
   .icon-button,

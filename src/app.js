@@ -35,10 +35,12 @@
     resetRuntime();
     ui.resetPauseButton();
     ui.showGameScreen();
+    ui.scrollToTop();
     ui.hideOverlay();
     ui.renderScoreboard(game.players);
     ui.renderTarget(game);
     draw();
+    scheduleViewportSync();
 
     runtime.animationId = requestAnimationFrame(loop);
   }
@@ -234,6 +236,7 @@
     stopLoop();
     game = null;
     ui.showSetupScreen();
+    ui.scrollToTop();
     ui.hideOverlay();
     ui.renderTarget(null);
     syncSetupPreview();
@@ -319,6 +322,10 @@
 
   window.addEventListener("resize", scheduleViewportSync);
   window.addEventListener("orientationchange", scheduleViewportSync);
+  if (window.visualViewport?.addEventListener) {
+    window.visualViewport.addEventListener("resize", scheduleViewportSync);
+    window.visualViewport.addEventListener("scroll", scheduleViewportSync);
+  }
 
   ui.setPhoneMode(isPhoneViewport());
   ui.applyPrefs(storage.loadPrefs());
