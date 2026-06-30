@@ -60,7 +60,7 @@
       if (prefs.speed) {
         elements.setupForm.elements.speed.value = prefs.speed;
       }
-      if (prefs.fieldSize) {
+      if (prefs.fieldSize && elements.setupForm.elements.fieldSize) {
         elements.setupForm.elements.fieldSize.value = prefs.fieldSize;
       }
       if (prefs.theme) {
@@ -122,8 +122,9 @@
       const speed = SPEEDS[elements.setupForm.elements.speed.value]
         ? elements.setupForm.elements.speed.value
         : "fast";
-      const fieldSize = FIELD_SIZES[elements.setupForm.elements.fieldSize.value]
-        ? elements.setupForm.elements.fieldSize.value
+      const requestedFieldSize = elements.setupForm.elements.fieldSize?.value;
+      const fieldSize = FIELD_SIZES[requestedFieldSize]
+        ? requestedFieldSize
         : DEFAULT_FIELD_SIZE;
       const theme = elements.setupForm.elements.theme.value === "light" ? "light" : "dark";
       const dictionaryId = isDictionaryId(elements.setupForm.elements.dictionaryId.value)

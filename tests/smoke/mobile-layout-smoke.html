@@ -52,21 +52,14 @@
           <div class="settings-grid">
             <fieldset class="setting-picker setting-picker--two">
               <legend>Challenge</legend>
-              <label><input type="radio" name="challenge" value="classic" checked><span>Classic</span></label>
-              <label><input type="radio" name="challenge" value="reading"><span>Reading</span></label>
+              <label><input type="radio" name="challenge" value="classic"><span>Classic</span></label>
+              <label><input type="radio" name="challenge" value="reading" checked><span>Reading</span></label>
             </fieldset>
             <fieldset class="setting-picker setting-picker--three">
               <legend>Speed</legend>
               <label><input type="radio" name="speed" value="manual" checked><span>No auto</span></label>
               <label><input type="radio" name="speed" value="slow"><span>Slow</span></label>
               <label><input type="radio" name="speed" value="fast"><span>Fast</span></label>
-            </fieldset>
-            <fieldset class="setting-picker setting-picker--four">
-              <legend>Field size</legend>
-              <label><input type="radio" name="fieldSize" value="auto" checked><span>Auto</span></label>
-              <label><input type="radio" name="fieldSize" value="small"><span>Small</span></label>
-              <label><input type="radio" name="fieldSize" value="medium"><span>Medium</span></label>
-              <label><input type="radio" name="fieldSize" value="large"><span>Large</span></label>
             </fieldset>
             <label class="field setting-field" id="dictionaryField">
               <span>Dictionary</span>
@@ -133,6 +126,7 @@
         setTimeout(() => {
           report("checking setup");
           assert(document.querySelectorAll(".color-swatch").length === 12, "Expected generated color swatches.");
+          assert(!document.querySelector("#dictionarySelect").disabled, "Expected reading language to be enabled on first load.");
           document.querySelector("#setupScreen").style.paddingBottom = "720px";
           window.scrollTo(0, document.body.scrollHeight);
           document.querySelector("#setupForm").requestSubmit();
