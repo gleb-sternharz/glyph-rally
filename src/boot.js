@@ -1,6 +1,7 @@
 (function (window, document) {
   "use strict";
 
+  const ASSET_VERSION = getAssetVersion();
   const RUNTIME_SCRIPTS = [
     "src/core/dictionary.js",
     "src/core/storage.js",
@@ -69,11 +70,25 @@
   function loadScript(src) {
     return new Promise((resolve, reject) => {
       const script = document.createElement("script");
-      script.src = src;
+      script.src = versionedAsset(src);
       script.onload = resolve;
       script.onerror = () => reject(new Error(`Failed to load ${src}`));
       document.body.append(script);
     });
+  }
+
+  function getAssetVersion() {
+    const bootUrl = document.currentScript?.src;
+    return bootUrl ? new URL(bootUrl, window.location.href).searchParams.get("v") : "";
+  }
+
+  function versionedAsset(src) {
+    if (!ASSET_VERSION) {
+      return src;
+    }
+
+    const separator = src.includes("?") ? "&" : "?";
+    return `${src}${separator}v=${encodeURIComponent(ASSET_VERSION)}`;
   }
 
   function waitForAppReady() {
