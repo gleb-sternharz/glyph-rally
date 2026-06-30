@@ -1,7 +1,8 @@
 .setup-screen {
+  max-height: 100%;
   display: grid;
   grid-template-columns: minmax(260px, 0.78fr) minmax(320px, 1.22fr);
-  gap: 32px;
+  gap: clamp(12px, 3vh, 32px);
   align-items: stretch;
 }
 
@@ -65,7 +66,7 @@
 
 .setup-form {
   display: grid;
-  gap: 16px;
+  gap: clamp(8px, 2vh, 16px);
 }
 
 fieldset {
@@ -77,7 +78,7 @@ fieldset {
 .mode-picker,
 .setting-picker {
   display: grid;
-  gap: 10px;
+  gap: clamp(6px, 1.25vh, 10px);
 }
 
 .mode-picker {
@@ -99,7 +100,7 @@ fieldset {
 .mode-picker legend,
 .setting-picker legend {
   grid-column: 1 / -1;
-  margin-bottom: 8px;
+  margin-bottom: clamp(2px, 1vh, 8px);
   color: var(--muted);
   font-size: 0.88rem;
   font-weight: 700;
@@ -118,7 +119,7 @@ fieldset {
 
 .mode-picker span,
 .setting-picker span {
-  min-height: 48px;
+  min-height: clamp(38px, 6vh, 48px);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
@@ -149,7 +150,7 @@ fieldset {
 .settings-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: clamp(8px, 2vh, 16px);
 }
 
 .setting-picker--wide {
@@ -163,19 +164,19 @@ fieldset {
 .player-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: clamp(8px, 2vh, 16px);
 }
 
 .player-panel {
   min-width: 0;
-  padding: 20px;
+  padding: clamp(12px, 2.5vh, 20px);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background:
     linear-gradient(160deg, rgba(98, 230, 255, 0.08), transparent 48%),
     var(--surface);
   display: grid;
-  gap: 18px;
+  gap: clamp(8px, 2.25vh, 18px);
 }
 
 .player-panel:hover {
@@ -210,7 +211,7 @@ fieldset {
 
 .field {
   display: grid;
-  gap: 8px;
+  gap: clamp(5px, 1vh, 8px);
   color: var(--muted);
   font-size: 0.88rem;
   font-weight: 700;
@@ -244,7 +245,7 @@ fieldset {
 }
 
 .color-field legend {
-  margin-bottom: 8px;
+  margin-bottom: clamp(5px, 1vh, 8px);
 }
 
 .color-options {
@@ -330,12 +331,26 @@ kbd {
 
 @media (max-width: 840px) {
   .setup-screen {
+    height: 100%;
     grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    align-content: center;
   }
 
   .setup-copy {
-    min-height: 290px;
-    padding: 26px;
+    height: clamp(96px, 14vh, 140px);
+    min-height: 0;
+    padding: 18px 26px;
+    justify-content: center;
+  }
+
+  .setup-copy .lede {
+    display: none;
+  }
+
+  .setup-copy h1 {
+    margin-bottom: 0;
+    font-size: clamp(2.75rem, 10vw, 4rem);
   }
 
   .setup-copy::after {
@@ -347,11 +362,11 @@ kbd {
   }
 
   .player-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .settings-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .setting-picker--wide {
@@ -375,9 +390,15 @@ kbd {
   }
 
   .setup-copy {
-    min-height: 240px;
+    height: clamp(96px, 14vh, 140px);
+    min-height: 0;
+    padding: 18px;
     border-left: 1px solid var(--line);
     border-right: 1px solid var(--line);
+  }
+
+  .player-grid {
+    grid-template-columns: 1fr;
   }
 
   .setup-copy::after {
@@ -386,5 +407,30 @@ kbd {
     border-width: 16px;
     top: -18px;
     right: -86px;
+  }
+}
+
+@media (max-width: 840px) and (max-height: 650px) {
+  .setup-screen {
+    gap: 8px;
+  }
+
+  .setup-copy {
+    height: 48px;
+    padding: 8px 18px;
+  }
+
+  .setup-copy .eyebrow {
+    display: none;
+  }
+
+  .setup-copy h1 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 840px) and (max-height: 540px) {
+  .setup-copy {
+    display: none;
   }
 }
